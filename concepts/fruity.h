@@ -23,3 +23,6 @@
 		}							\
 	} while (0)
 
+#define fruity_cast(pp) (const void**)(pp)
+#define fruity_cast_mutable(pp) (void**)(pp)
+
