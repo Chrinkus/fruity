@@ -24,7 +24,7 @@
  */
 #pragma once
 
-#include <stdlib.h>	/* malloc and user will require free */
+#include <stddef.h>	/* size_t */
 
 /**
  * Fruity Types
@@ -45,6 +45,40 @@ typedef void (*FruityRowFuncMutable)(Fruity2DMutable, int, void*);
 typedef void (*FruityColFuncMutable)(Fruity2DMutable, int, int, void*);
 
 /**
+ * Standard Library Function Wrappers
+ *
+ * Removes the need to silently include 'stdlib.h'
+ */
+
+/**
+ * fruity_malloc
+ *
+ * Allocate enough space for a 2-dimensional array of the indicated type size.
+ * Do not call this function directly, use `fruity_new` instead.
+ *
+ * @param rows		The number of rows to allocate.
+ * @param cols		The number of columns per row.
+ * @param type_size	The size of the array type.
+ * @param ptr_size	The size of the pointer to the array type.
+ *
+ * @return		A pointer to a block of memory sufficiently sized to
+ * 			contain a 2-dimensional array of the indicated rows,
+ * 			columns and type.
+ */
+void*
+fruity_malloc(size_t rows, size_t cols, size_t type_size, size_t ptr_size);
+
+/**
+ * fruity_free
+ *
+ * De-allocate the memory previously allocated by a call to `fruity_new`.
+ *
+ * @param arr	A pointer to an allocated 2-dimensional array.
+ */
+void
+fruity_free(void* arr);
+
+/**
  * fruity_new
  *
  * Allocate a new 2D array of the given type. Assign the array to the
@@ -59,7 +93,7 @@ typedef void (*FruityColFuncMutable)(Fruity2DMutable, int, int, void*);
 	do {								\
 		size_t r = (rows);					\
 		size_t c = (cols);					\
-		pp = malloc(sizeof(t*) * r + sizeof(t) * r * c);	\
+		pp = fruity_malloc(r, c, sizeof(t), sizeof(t*));	\
 		if (pp) {						\
 			t* p = (t*)(pp + r);				\
 			for (size_t i = 0; i < r; ++i)			\

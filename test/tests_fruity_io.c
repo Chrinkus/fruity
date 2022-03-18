@@ -53,7 +53,7 @@ static void fruity_io_int_test(void** state)
 
 	fruity_io_delimiter = FRUITY_IO_DELIMITER_DEFAULT;
 
-	free(ai);
+	fruity_free(ai);
 }
 
 int main(void)

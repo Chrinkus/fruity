@@ -20,22 +20,22 @@ static void fruity_new_test(void** state)
 	// The array has "something" in it
 	assert_non_null(ai);
 	// Clean up allocation
-	free(ai);
+	fruity_free(ai);
 
 	double** ad = NULL;
 	fruity_new(double, 3, 22, ad);
 	assert_non_null(ad);
-	free(ad);
+	fruity_free(ad);
 
 	char** ac = NULL;
 	fruity_new(char, 1000, 1000, ac);
 	assert_non_null(ac);
-	free(ac);
+	fruity_free(ac);
 
 	struct plot** as = NULL;
 	fruity_new(struct plot, 20, 30, as);
 	assert_non_null(as);
-	free(as);
+	fruity_free(as);
 }
 
 static void int_inc(Fruity2DMutable arr, int r, int c, void* data)
@@ -69,7 +69,7 @@ static void fruity_transform_test(void** state)
 	assert_int_equal(ai[5][5], 56);
 	assert_int_equal(ai[9][9], 100);
 
-	free(ai);
+	fruity_free(ai);
 
 	char** ac = NULL;
 	fruity_new(char, 2, 13, ac);
@@ -80,7 +80,7 @@ static void fruity_transform_test(void** state)
 	assert_int_equal(ac[0][0], 'a');
 	assert_int_equal(ac[1][12], 'z');
 
-	free(ac);
+	fruity_free(ac);
 }
 
 void accumulate(Fruity2DConst arr, int r, int c, void* data)
@@ -105,7 +105,7 @@ static void fruity_foreach_test(void** state)
 
 	assert_int_equal(sum, 55);
 
-	free(ai);
+	fruity_free(ai);
 }
 
 int main(void)

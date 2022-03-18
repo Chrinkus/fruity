@@ -23,6 +23,27 @@
  * SOFTWARE.
  */
 #include "fruity.h"
+#include <stdlib.h>
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Standard Library Wrappers
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
+
+void*
+fruity_malloc(size_t rows, size_t cols, size_t type_size, size_t ptr_size)
+{
+	return malloc(ptr_size * rows + type_size * rows * cols);
+}
+
+void
+fruity_free(void* arr)
+{
+	free(arr);
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Fruity Functions
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 
 void
 fruity_foreach(Fruity2DConst a, int rows, int cols,
