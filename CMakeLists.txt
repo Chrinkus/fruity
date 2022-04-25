@@ -16,3 +16,9 @@ add_subdirectory(src)
 enable_testing()
 add_subdirectory(test)
 
+install(EXPORT ${LIB_NAME}
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${LIB_NAME}
+	NAMESPACE ${LIB_NAME}::
+	FILE ${LIB_NAME}-config.cmake
+)
+
