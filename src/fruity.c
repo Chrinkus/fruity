@@ -30,21 +30,25 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 
 void*
-fruity_malloc(size_t rows, size_t cols, size_t type_size, size_t ptr_size)
+fruity_malloc(int rows, int cols, int type_size, int ptr_size)
 {
-	return malloc(ptr_size * rows + type_size * rows * cols);
+        return malloc(ptr_size * rows + type_size * rows * cols);
 }
 
 void
-fruity_free(void* arr)
+fruity_free(struct fruity_2d* ptr)
 {
-	free(arr);
+        free(ptr->data);
+        ptr->data = NULL;
+        ptr->rows = 0;
+        ptr->cols = 0;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Fruity Functions
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 
+/*
 void
 fruity_foreach(Fruity2DConst a, int rows, int cols,
 		FruityRowFuncConst row_func,
@@ -74,4 +78,5 @@ fruity_transform(Fruity2DMutable a, int rows, int cols,
 			row_func(a, i, userdata);
 	}
 }
+*/
 

@@ -24,25 +24,36 @@
  */
 #pragma once
 
-#include <stddef.h>	/* size_t */
+//#include <stddef.h>     /* size_t */
 
 /**
  * Fruity Types
  */
+typedef struct fruity_2d Fruity2D;
+struct fruity_2d {
+        void** data;
+        int rows;
+        int cols;
+};
+
+/*
 typedef const void*const*const Fruity2DConst;
 typedef void** Fruity2DMutable;
 
 #define fruity_cast_const(pp) (Fruity2DConst)(pp)
 #define fruity_cast_mutable(pp) (Fruity2DMutable)(pp)
+*/
 
 /**
  * Fruity Function Signatures
  */
+/*
 typedef void (*FruityRowFuncConst)(Fruity2DConst, int, void*);
 typedef void (*FruityColFuncConst)(Fruity2DConst, int, int, void*);
 
 typedef void (*FruityRowFuncMutable)(Fruity2DMutable, int, void*);
 typedef void (*FruityColFuncMutable)(Fruity2DMutable, int, int, void*);
+*/
 
 /**
  * Standard Library Function Wrappers
@@ -56,27 +67,27 @@ typedef void (*FruityColFuncMutable)(Fruity2DMutable, int, int, void*);
  * Allocate enough space for a 2-dimensional array of the indicated type size.
  * Do not call this function directly, use `fruity_new` instead.
  *
- * @param rows		The number of rows to allocate.
- * @param cols		The number of columns per row.
- * @param type_size	The size of the array type.
- * @param ptr_size	The size of the pointer to the array type.
+ * @param rows          The number of rows to allocate.
+ * @param cols          The number of columns per row.
+ * @param type_size     The size of the array type.
+ * @param ptr_size      The size of the pointer to the array type.
  *
- * @return		A pointer to a block of memory sufficiently sized to
- * 			contain a 2-dimensional array of the indicated rows,
- * 			columns and type.
+ * @return              A pointer to a block of memory sufficiently sized to
+ *                      contain a 2-dimensional array of the indicated rows,
+ *                      columns and type.
  */
 void*
-fruity_malloc(size_t rows, size_t cols, size_t type_size, size_t ptr_size);
+fruity_malloc(int rows, int cols, int type_size, int ptr_size);
 
 /**
  * fruity_free
  *
  * De-allocate the memory previously allocated by a call to `fruity_new`.
  *
- * @param arr	A pointer to an allocated 2-dimensional array.
+ * @param ptr   A pointer to an allocated struct fruity_2d.
  */
 void
-fruity_free(void* arr);
+fruity_free(struct fruity_2d* ptr);
 
 /**
  * fruity_new
@@ -84,22 +95,25 @@ fruity_free(void* arr);
  * Allocate a new 2D array of the given type. Assign the array to the
  * provided out-pointer.
  *
- * @param t	Type of elements.
- * @param rows	Number of rows.
- * @param cols	Number of columns.
- * @param pp	Out pointer of type t**.
+ * @param t     Type of elements.
+ * @param rows  Number of rows.
+ * @param cols  Number of columns.
+ * @param out   Out pointer to struct fruity_2d.
  */
-#define fruity_new(t, rows, cols, pp)					\
-	do {								\
-		size_t r = (rows);					\
-		size_t c = (cols);					\
-		pp = fruity_malloc(r, c, sizeof(t), sizeof(t*));	\
-		if (pp) {						\
-			t* p = (t*)(pp + r);				\
-			for (size_t i = 0; i < r; ++i)			\
-				pp[i] = (p + i * c);			\
-		}							\
-	} while (0)
+#define fruity_new(t, num_rows, num_cols, out)                          \
+        do {                                                            \
+                int r = (num_rows);                                     \
+                int c = (num_cols);                                     \
+                t** ppt = fruity_malloc(r, c, sizeof(t), sizeof(t*));   \
+                if (ppt) {                                              \
+                        t* p = (t*)(ppt + r);                           \
+                        for (int i = 0; i < r; ++i)                     \
+                                ppt[i] = (p + i * c);                   \
+                        (out)->data = (void**)ppt;                      \
+                        (out)->rows = r;                                \
+                        (out)->cols = c;                                \
+                }                                                       \
+        } while (0)
 
 /**
  * fruity_foreach
@@ -113,12 +127,14 @@ fruity_free(void* arr);
  * @param col_func	A function to execute for each element of the array.
  * @param user_data	Optional data to be passed to row and column functions.
  */
+/*
 void
 fruity_foreach(Fruity2DConst a, int rows, int cols,
 		FruityRowFuncConst row_func,
 		FruityColFuncConst col_func,
 		void* userdata);
 
+*/
 /**
  * fruity_transform
  *
@@ -131,9 +147,11 @@ fruity_foreach(Fruity2DConst a, int rows, int cols,
  * @param col_func	A function to execute for each element of the array.
  * @param user_data	Optional data to be passed to row and column functions.
  */
+/*
 void
 fruity_transform(Fruity2DMutable a, int rows, int cols,
 		FruityRowFuncMutable row_func,
 		FruityColFuncMutable col_func,
 		void* userdata);
+*/
 
