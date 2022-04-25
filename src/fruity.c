@@ -36,47 +36,56 @@ fruity_malloc(int rows, int cols, int type_size, int ptr_size)
 }
 
 void
-fruity_free(struct fruity_2d* ptr)
+fruity_free(struct fruity_2d* pfs)
 {
-        free(ptr->data);
-        ptr->data = NULL;
-        ptr->rows = 0;
-        ptr->cols = 0;
+        free(pfs->data);
+        pfs->data = NULL;
+        pfs->rows = 0;
+        pfs->cols = 0;
 }
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Fruity inline getter symbols
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
+
+void* 
+fruity_data(struct fruity_2d* pfs);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Fruity Functions
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 
-/*
 void
-fruity_foreach(Fruity2DConst a, int rows, int cols,
-		FruityRowFuncConst row_func,
-		FruityColFuncConst col_func,
-		void* userdata)
+fruity_foreach(const struct fruity_2d* pfs,
+                FruityRowFuncConst row_func,
+                FruityColFuncConst col_func,
+                void* userdata)
 {
-	for (int i = 0; i < rows; ++i) {
-		for (int j = 0; j < cols; ++j)
-			if (col_func)
-				col_func(a, i, j, userdata);
-		if (row_func)
-			row_func(a, i, userdata);
-	}
+        Fruity2DConst p = FRUITY_CAST_CONST(pfs->data);
+
+        for (int i = 0; i < pfs->rows; ++i) {
+                for (int j = 0; j < pfs->cols; ++j)
+                        if (col_func)
+                                col_func(p, i, j, userdata);
+                if (row_func)
+                        row_func(p, i, userdata);
+        }
 }
 
 void
-fruity_transform(Fruity2DMutable a, int rows, int cols,
-		FruityRowFuncMutable row_func,
-		FruityColFuncMutable col_func,
-		void* userdata)
+fruity_transform(struct fruity_2d* pfs,
+                 FruityRowFuncMutable row_func,
+                 FruityColFuncMutable col_func,
+                 void* userdata)
 {
-	for (int i = 0; i < rows; ++i) {
-		for (int j = 0; j < cols; ++j)
-			if (col_func)
-				col_func(a, i, j, userdata);
-		if (row_func)
-			row_func(a, i, userdata);
-	}
+        Fruity2DMutable p = FRUITY_CAST_MUTABLE(pfs->data);
+
+        for (int i = 0; i < pfs->rows; ++i) {
+                for (int j = 0; j < pfs->cols; ++j)
+                        if (col_func)
+                                col_func(p, i, j, userdata);
+                if (row_func)
+                        row_func(p, i, userdata);
+        }
 }
-*/
 

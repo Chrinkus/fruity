@@ -58,7 +58,6 @@ static void fruity_new_test(void** state)
         assert_int_equal(as.cols, 0);
 }
 
-/*
 static void int_inc(Fruity2DMutable arr, int r, int c, void* data)
 {
 	int** ai = (int**)arr;
@@ -79,29 +78,33 @@ static void fruity_transform_test(void** state)
 {
 	(void)state;
 
-	int** ai = NULL;
-	fruity_new(int, 10, 10, ai);
-	assert_non_null(ai);
+	Fruity2D fi = { 0 };
+	fruity_new(int, 10, 10, &fi);
 
 	int v = 1;
-	fruity_transform(fruity_cast_mutable(ai), 10, 10, NULL, int_inc, &v);
-	assert_int_equal(ai[0][0], 1);
-	assert_int_equal(ai[1][0], 11);
-	assert_int_equal(ai[5][5], 56);
-	assert_int_equal(ai[9][9], 100);
+	fruity_transform(&fi, NULL, int_inc, &v);
 
-	fruity_free(ai);
+        int** ppi = fruity_data(&fi);
+	assert_int_equal(ppi[0][0], 1);
+	assert_int_equal(ppi[1][0], 11);
+	assert_int_equal(ppi[5][5], 56);
+	assert_int_equal(ppi[9][9], 100);
 
-	char** ac = NULL;
-	fruity_new(char, 2, 13, ac);
-	assert_non_null(ac);
+	fruity_free(&fi);
+
+        Fruity2D fc = { 0 };
+	fruity_new(char, 2, 13, &fc);
 
 	char ch = 'a';
-	fruity_transform(fruity_cast_mutable(ac), 2, 13, NULL, char_inc, &ch);
-	assert_int_equal(ac[0][0], 'a');
-	assert_int_equal(ac[1][12], 'z');
+	fruity_transform(&fc, NULL, char_inc, &ch);
 
-	fruity_free(ac);
+        char** ppc = fruity_data(&fc);
+	assert_int_equal(ppc[0][0], 'a');
+	assert_int_equal(ppc[0][12], 'm');
+	assert_int_equal(ppc[1][0], 'n');
+	assert_int_equal(ppc[1][12], 'z');
+
+	fruity_free(&fc);
 }
 
 void accumulate(Fruity2DConst arr, int r, int c, void* data)
@@ -116,28 +119,28 @@ static void fruity_foreach_test(void** state)
 {
 	(void)state;
 
-	int** ai = NULL;
-	fruity_new(int, 5, 2, ai);
+        Fruity2D fi = { 0 };
+	fruity_new(int, 5, 2, &fi);
+
 	int v = 1;
-	fruity_transform(fruity_cast_mutable(ai), 5, 2, NULL, int_inc, &v);
+	fruity_transform(&fi, NULL, int_inc, &v);
 
 	int sum = 0;
-	fruity_foreach(fruity_cast_const(ai), 5, 2, NULL, accumulate, &sum);
+	fruity_foreach(&fi, NULL, accumulate, &sum);
 
 	assert_int_equal(sum, 55);
 
-	fruity_free(ai);
+	fruity_free(&fi);
 }
-*/
 
 int main(void)
 {
-	const struct CMUnitTest tests[] = {
-		cmocka_unit_test(fruity_new_test),
-		//cmocka_unit_test(fruity_transform_test),
-		//cmocka_unit_test(fruity_foreach_test),
-	};
+        const struct CMUnitTest tests[] = {
+                cmocka_unit_test(fruity_new_test),
+                cmocka_unit_test(fruity_transform_test),
+                cmocka_unit_test(fruity_foreach_test),
+        };
 
-	return cmocka_run_group_tests(tests, NULL, NULL);
+        return cmocka_run_group_tests(tests, NULL, NULL);
 }
 

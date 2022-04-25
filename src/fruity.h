@@ -24,11 +24,10 @@
  */
 #pragma once
 
-//#include <stddef.h>     /* size_t */
-
-/**
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Fruity Types
- */
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 typedef struct fruity_2d Fruity2D;
 struct fruity_2d {
         void** data;
@@ -36,30 +35,27 @@ struct fruity_2d {
         int cols;
 };
 
-/*
 typedef const void*const*const Fruity2DConst;
 typedef void** Fruity2DMutable;
 
-#define fruity_cast_const(pp) (Fruity2DConst)(pp)
-#define fruity_cast_mutable(pp) (Fruity2DMutable)(pp)
-*/
+#define FRUITY_CAST_CONST(pp) (Fruity2DConst)(pp)
+#define FRUITY_CAST_MUTABLE(pp) (Fruity2DMutable)(pp)
 
-/**
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Fruity Function Signatures
- */
-/*
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 typedef void (*FruityRowFuncConst)(Fruity2DConst, int, void*);
 typedef void (*FruityColFuncConst)(Fruity2DConst, int, int, void*);
 
 typedef void (*FruityRowFuncMutable)(Fruity2DMutable, int, void*);
 typedef void (*FruityColFuncMutable)(Fruity2DMutable, int, int, void*);
-*/
 
-/**
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Standard Library Function Wrappers
  *
  * Removes the need to silently include 'stdlib.h'
- */
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /**
  * fruity_malloc
@@ -84,10 +80,10 @@ fruity_malloc(int rows, int cols, int type_size, int ptr_size);
  *
  * De-allocate the memory previously allocated by a call to `fruity_new`.
  *
- * @param ptr   A pointer to an allocated struct fruity_2d.
+ * @param pfs   A pointer to a fruity_2d struct.
  */
 void
-fruity_free(struct fruity_2d* ptr);
+fruity_free(struct fruity_2d* pfs);
 
 /**
  * fruity_new
@@ -98,9 +94,9 @@ fruity_free(struct fruity_2d* ptr);
  * @param t     Type of elements.
  * @param rows  Number of rows.
  * @param cols  Number of columns.
- * @param out   Out pointer to struct fruity_2d.
+ * @param pfs   Out pointer to fruity_2d struct.
  */
-#define fruity_new(t, num_rows, num_cols, out)                          \
+#define fruity_new(t, num_rows, num_cols, pfs)                          \
         do {                                                            \
                 int r = (num_rows);                                     \
                 int c = (num_cols);                                     \
@@ -109,49 +105,63 @@ fruity_free(struct fruity_2d* ptr);
                         t* p = (t*)(ppt + r);                           \
                         for (int i = 0; i < r; ++i)                     \
                                 ppt[i] = (p + i * c);                   \
-                        (out)->data = (void**)ppt;                      \
-                        (out)->rows = r;                                \
-                        (out)->cols = c;                                \
+                        (pfs)->data = (void**)ppt;                      \
+                        (pfs)->rows = r;                                \
+                        (pfs)->cols = c;                                \
                 }                                                       \
         } while (0)
+
+/**
+ * fruity_data
+ *
+ * Get a pointer to the data member of the fruity_2d struct. This is a
+ * convenience function for accessing the inner data for double bracket
+ * referencing.
+ *
+ * Warning: The 'data' member is cast to a void* on return to alleviate
+ * any compiler warnings. The caller must be putting this into the
+ * appropriate type. See tests_fruity.c for examples.
+ *
+ * @param pfs   A pointer to a fruity_2d struct.
+ *
+ * @return      A pointer to the data member of 'pfs'.
+ */
+inline void* 
+fruity_data(struct fruity_2d* pfs)
+{
+        return (void*)pfs->data;
+}
+
 
 /**
  * fruity_foreach
  *
  * Perform operations on a read-only 2D array.
  *
- * @param a		The 2D array to read from.
- * @param rows		The number of rows in the 2D array.
- * @param cols		The number of columns in the 2D array.
- * @param row_func	A function to execute at the end of each row.
- * @param col_func	A function to execute for each element of the array.
- * @param user_data	Optional data to be passed to row and column functions.
+ * @param pfs           A read-only pointer to the fruity_2d struct.
+ * @param row_func      A function to execute at the end of each row.
+ * @param col_func      A function to execute for each element of the array.
+ * @param user_data     Optional data to be passed to row and column functions.
  */
-/*
 void
-fruity_foreach(Fruity2DConst a, int rows, int cols,
-		FruityRowFuncConst row_func,
-		FruityColFuncConst col_func,
-		void* userdata);
-
-*/
+fruity_foreach(const struct fruity_2d* pfs, 
+                FruityRowFuncConst row_func,
+                FruityColFuncConst col_func,
+                void* userdata);
 /**
  * fruity_transform
  *
- * Perform operations on a mutable 2D array, possibly altering its data.
+ * Perform operations on a mutable fruity_2d struct, possibly altering its
+ * data.
  *
- * @param a		The 2D array to operate on.
- * @param rows		The number of rows in the 2D array.
- * @param cols		The number of columns in the 2D array.
- * @param row_func	A function to execute at the end of each row.
- * @param col_func	A function to execute for each element of the array.
- * @param user_data	Optional data to be passed to row and column functions.
+ * @param pfs           A pointer to the fruity_2d struct to operate on.
+ * @param row_func      A function to execute at the end of each row.
+ * @param col_func      A function to execute for each element of the array.
+ * @param user_data     Optional data to be passed to row and column functions.
  */
-/*
 void
-fruity_transform(Fruity2DMutable a, int rows, int cols,
-		FruityRowFuncMutable row_func,
-		FruityColFuncMutable col_func,
-		void* userdata);
-*/
+fruity_transform(struct fruity_2d* pfs,
+                 FruityRowFuncMutable row_func,
+                 FruityColFuncMutable col_func,
+                 void* userdata);
 
