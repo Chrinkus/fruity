@@ -19,41 +19,36 @@ static void fruity_io_int_test(void** state)
 {
 	(void)state;
 
-	int** ai = NULL;
+	Fruity2D fi = { 0 };
 	int rows = 5;
 	int cols = 6;
-	fruity_new(int, rows, cols, ai);
-	assert_non_null(ai);
+	fruity_new(int, rows, cols, &fi);
+	assert_non_null(fruity_data(&fi));
 
-	int v = 0;
-	fruity_transform(fruity_cast_mutable(ai), rows, cols, NULL,
-			int_init_inc, &v);
+	int v = 10;
+	fruity_transform(&fi, NULL, int_init_inc, &v);
 
 	// No delimiter, no width, defaults to "touching"
-	fruity_foreach(fruity_cast_const(ai), rows, cols,
-			fruity_io_newline, fruity_io_print_int, NULL);
+	fruity_foreach(&fi, fruity_io_newline, fruity_io_print_int, NULL);
 
 	// Delimiter indicated, should not have hanging delimiter
 	fruity_io_delimiter = '-';
-	fruity_foreach(fruity_cast_const(ai), rows, cols,
-			fruity_io_newline, fruity_io_print_int, NULL);
+	fruity_foreach(&fi, fruity_io_newline, fruity_io_print_int, NULL);
 
 	// Tests that the 'backspace' overwrite does not delete the last
 	// element.
 	fruity_io_delimiter = '\0';
-	fruity_foreach(fruity_cast_const(ai), rows, cols,
-			fruity_io_newline, fruity_io_print_int, NULL);
+	fruity_foreach(&fi, fruity_io_newline, fruity_io_print_int, NULL);
 
 	// Recommended use: width set to expected size of output, delimiter
 	// used to spread columns.
 	int width = 3;
 	fruity_io_delimiter = '\t';
-	fruity_foreach(fruity_cast_const(ai), rows, cols,
-			fruity_io_newline, fruity_io_print_int, &width);
+	fruity_foreach(&fi, fruity_io_newline, fruity_io_print_int, &width);
 
 	fruity_io_delimiter = FRUITY_IO_DELIMITER_DEFAULT;
 
-	fruity_free(ai);
+	fruity_free(&fi);
 }
 
 int main(void)

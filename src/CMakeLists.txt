@@ -1,11 +1,11 @@
 set(sources
 	"fruity.c"
-        #"fruity_io.c"
+        "fruity_io.c"
 )
 
 set(headers
 	"fruity.h"
-        #"fruity_io.h"
+        "fruity_io.h"
 )
 
 add_library(${LIB_NAME} "${sources}")
