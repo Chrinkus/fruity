@@ -6,53 +6,53 @@
 #include "fruity.h"
 
 struct plot {
-	char id;
-	int weight;
+        char id;
+        int weight;
 };
 
 static void fruity_new_test(void** state)
 {
-	(void)state;
+        (void)state;
 
-	// Create 2D array
+        // Create 2D array
         Fruity2D ai = { 0 };
-	fruity_new(int, 10, 15, &ai);
-	// The array has "something" in it
-	assert_non_null(ai.data);
+        fruity_new(int, 10, 15, &ai);
+        // The array has "something" in it
+        assert_non_null(ai.data);
         assert_int_equal(ai.rows, 10);
         assert_int_equal(ai.cols, 15);
-	// Clean up allocation
-	fruity_free(&ai);
+        // Clean up allocation
+        fruity_free(&ai);
         assert_null(ai.data);
         assert_int_equal(ai.rows, 0);
         assert_int_equal(ai.cols, 0);
 
         Fruity2D ad = { 0 };
-	fruity_new(double, 3, 22, &ad);
-	assert_non_null(ad.data);
+        fruity_new(double, 3, 22, &ad);
+        assert_non_null(ad.data);
         assert_int_equal(ad.rows, 3);
         assert_int_equal(ad.cols, 22);
-	fruity_free(&ad);
+        fruity_free(&ad);
         assert_null(ad.data);
         assert_int_equal(ad.rows, 0);
         assert_int_equal(ad.cols, 0);
 
         Fruity2D ac = { 0 };
-	fruity_new(char, 1000, 1000, &ac);
-	assert_non_null(ac.data);
+        fruity_new(char, 1000, 1000, &ac);
+        assert_non_null(ac.data);
         assert_int_equal(ac.rows, 1000);
         assert_int_equal(ac.cols, 1000);
-	fruity_free(&ac);
+        fruity_free(&ac);
         assert_null(ac.data);
         assert_int_equal(ac.rows, 0);
         assert_int_equal(ac.cols, 0);
 
         Fruity2D as = { 0 };
-	fruity_new(struct plot, 20, 30, &as);
-	assert_non_null(as.data);
+        fruity_new(struct plot, 20, 30, &as);
+        assert_non_null(as.data);
         assert_int_equal(as.rows, 20);
         assert_int_equal(as.cols, 30);
-	fruity_free(&as);
+        fruity_free(&as);
         assert_null(as.data);
         assert_int_equal(as.rows, 0);
         assert_int_equal(as.cols, 0);
@@ -60,77 +60,77 @@ static void fruity_new_test(void** state)
 
 static void int_inc(Fruity2DMutable arr, int r, int c, void* data)
 {
-	int** ai = (int**)arr;
-	int* p = (int*)data;
+        int** ai = (int**)arr;
+        int* p = (int*)data;
 
-	ai[r][c] = (*p)++;
+        ai[r][c] = (*p)++;
 }
 
 static void char_inc(Fruity2DMutable arr, int r, int c, void* data)
 {
-	char** ac = (char**)arr;
-	char* p = (char*)data;
+        char** ac = (char**)arr;
+        char* p = (char*)data;
 
-	ac[r][c] = (*p)++;
+        ac[r][c] = (*p)++;
 }
 
 static void fruity_transform_test(void** state)
 {
-	(void)state;
+        (void)state;
 
-	Fruity2D fi = { 0 };
-	fruity_new(int, 10, 10, &fi);
+        Fruity2D fi = { 0 };
+        fruity_new(int, 10, 10, &fi);
 
-	int v = 1;
-	fruity_transform(&fi, NULL, int_inc, &v);
+        int v = 1;
+        fruity_transform(&fi, NULL, int_inc, &v);
 
         int** ppi = fruity_data(&fi);
-	assert_int_equal(ppi[0][0], 1);
-	assert_int_equal(ppi[1][0], 11);
-	assert_int_equal(ppi[5][5], 56);
-	assert_int_equal(ppi[9][9], 100);
+        assert_int_equal(ppi[0][0], 1);
+        assert_int_equal(ppi[1][0], 11);
+        assert_int_equal(ppi[5][5], 56);
+        assert_int_equal(ppi[9][9], 100);
 
-	fruity_free(&fi);
+        fruity_free(&fi);
 
         Fruity2D fc = { 0 };
-	fruity_new(char, 2, 13, &fc);
+        fruity_new(char, 2, 13, &fc);
 
-	char ch = 'a';
-	fruity_transform(&fc, NULL, char_inc, &ch);
+        char ch = 'a';
+        fruity_transform(&fc, NULL, char_inc, &ch);
 
         char** ppc = fruity_data(&fc);
-	assert_int_equal(ppc[0][0], 'a');
-	assert_int_equal(ppc[0][12], 'm');
-	assert_int_equal(ppc[1][0], 'n');
-	assert_int_equal(ppc[1][12], 'z');
+        assert_int_equal(ppc[0][0], 'a');
+        assert_int_equal(ppc[0][12], 'm');
+        assert_int_equal(ppc[1][0], 'n');
+        assert_int_equal(ppc[1][12], 'z');
 
-	fruity_free(&fc);
+        fruity_free(&fc);
 }
 
 void accumulate(Fruity2DConst arr, int r, int c, void* data)
 {
-	const int*const*const ai = (const int*const*const)arr;
-	int* p = (int*)data;
+        const int*const*const ai = (const int*const*const)arr;
+        int* p = (int*)data;
 
-	*p += ai[r][c];
+        *p += ai[r][c];
 }
 
 static void fruity_foreach_test(void** state)
 {
-	(void)state;
+        (void)state;
 
         Fruity2D fi = { 0 };
-	fruity_new(int, 5, 2, &fi);
+        fruity_new(int, 5, 2, &fi);
 
-	int v = 1;
-	fruity_transform(&fi, NULL, int_inc, &v);
+        int v = 1;
+        fruity_transform(&fi, NULL, int_inc, &v);
 
-	int sum = 0;
-	fruity_foreach(&fi, NULL, accumulate, &sum);
+        int sum = 0;
+        fruity_foreach(&fi, NULL, accumulate, &sum);
 
-	assert_int_equal(sum, 55);
+        assert_int_equal(sum, 55);
 
-	fruity_free(&fi);
+        fruity_free(&fi);
 }
 
 int main(void)
