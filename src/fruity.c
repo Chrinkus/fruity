@@ -24,6 +24,7 @@
  */
 #include "fruity.h"
 #include <stdlib.h>
+#include <string.h>
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Standard Library Wrappers
@@ -87,5 +88,15 @@ fruity_transform(struct fruity_2d* pfs,
                 if (row_func)
                         row_func(p, i, userdata);
         }
+}
+
+void
+fruity_initialize(struct fruity_2d* pfs, const void* value, int size)
+{
+        Fruity2DBytes p = FRUITY_CAST_BYTES(pfs->data);
+
+        for (int i = 0; i < pfs->rows; ++i)
+                for (int j = 0; j < pfs->cols; ++j)
+                        memcpy(&p[i][j * size], value, size);
 }
 

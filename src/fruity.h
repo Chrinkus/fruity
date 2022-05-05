@@ -37,9 +37,11 @@ struct fruity_2d {
 
 typedef const void*const*const Fruity2DConst;
 typedef void** Fruity2DMutable;
+typedef char** Fruity2DBytes;
 
 #define FRUITY_CAST_CONST(pp) (Fruity2DConst)(pp)
 #define FRUITY_CAST_MUTABLE(pp) (Fruity2DMutable)(pp)
+#define FRUITY_CAST_BYTES(pp) (Fruity2DBytes)(pp)
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Fruity Function Signatures
@@ -164,4 +166,18 @@ fruity_transform(struct fruity_2d* pfs,
                  FruityRowFuncMutable row_func,
                  FruityColFuncMutable col_func,
                  void* userdata);
+
+/**
+ * fruity_initialize
+ *
+ * Initialize all of the elements of a fruity_2d struct to a provided value.
+ *
+ * @param pfs   A pointer to the fruity_2d struct to initialize.
+ * @param value A read-only pointer to a value to use as initial data.
+ * @param size  The size in bytes of the value.
+ */
+void
+fruity_initialize(struct fruity_2d* pfs, const void* value, int size);
+
+#define fruity_init(pfs, p) (fruity_initialize((pfs), (p), sizeof(*(p))))
 

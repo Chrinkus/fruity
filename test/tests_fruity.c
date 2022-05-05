@@ -133,12 +133,55 @@ static void fruity_foreach_test(void** state)
         fruity_free(&fi);
 }
 
+static void fruity_initialize_test(void** state)
+{
+        (void)state;
+
+        Fruity2D fi = { 0 };
+        fruity_new(int, 4, 10, &fi);
+
+        int val = 37;
+        fruity_initialize(&fi, &val, sizeof(val));
+
+        int** p = fruity_data(&fi);
+        assert_int_equal(p[0][0], 37);
+        assert_int_equal(p[0][1], 37);
+        assert_int_equal(p[2][4], 37);
+        assert_int_equal(p[2][5], 37);
+        assert_int_equal(p[3][9], 37);
+
+        fruity_free(&fi);
+}
+
+static void fruity_init_test(void** state)
+{
+        (void)state;
+
+        Fruity2D fd = { 0 };
+        fruity_new(double, 12, 20, &fd);
+
+        double val = 3.14159;
+        fruity_init(&fd, &val);
+
+        double** p = fruity_data(&fd);
+        assert_float_equal(p[0][0], 3.14159, 0.000001);
+        assert_float_equal(p[0][1], 3.14159, 0.000001);
+        assert_float_equal(p[5][6], 3.14159, 0.000001);
+        assert_float_equal(p[5][7], 3.14159, 0.000001);
+        assert_float_equal(p[11][18], 3.14159, 0.000001);
+        assert_float_equal(p[11][19], 3.14159, 0.000001);
+
+        fruity_free(&fd);
+}
+
 int main(void)
 {
         const struct CMUnitTest tests[] = {
                 cmocka_unit_test(fruity_new_test),
                 cmocka_unit_test(fruity_transform_test),
                 cmocka_unit_test(fruity_foreach_test),
+                cmocka_unit_test(fruity_initialize_test),
+                cmocka_unit_test(fruity_init_test),
         };
 
         return cmocka_run_group_tests(tests, NULL, NULL);
