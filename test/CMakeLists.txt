@@ -6,6 +6,7 @@ add_custom_target(tests)
 
 set(test_sources
 	"tests_fruity.c"
+        "tests_fruity_structs.c"
 	"tests_fruity_io.c"
 )
 
