@@ -22,7 +22,7 @@ static void fruity_io_int_test(void** state)
         Fruity2D fi = { 0 };
         int rows = 5;
         int cols = 6;
-        fruity_new(int, rows, cols, &fi);
+        fruity_new(&fi, rows, cols, int);
         assert_non_null(fruity_data(&fi));
 
         int v = 10;

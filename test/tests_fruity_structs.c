@@ -18,7 +18,7 @@ static void fruity_structs_new_test(void** state)
         (void)state;
 
         Fruity2D fs = { 0 };
-        fruity_new(struct something, 5, 13, &fs);
+        fruity_new(&fs, 5, 13, struct something);
 
         struct something** p = fruity_data(&fs);
 
@@ -32,7 +32,7 @@ static void fruity_structs_initialize_test(void** state)
         (void)state;
 
         Fruity2D fs = { 0 };
-        fruity_new(struct something, 32, 8, &fs);
+        fruity_new(&fs, 32, 8, struct something);
 
         struct something s = {
                 .id = '$',
@@ -67,11 +67,45 @@ static void fruity_structs_initialize_test(void** state)
         fruity_free(&fs);
 }
 
+static void inc_and_set_count(Fruity2DMutable ppm, int r, int c, void* data)
+{
+        struct something** pp = (struct something**)ppm;
+        int* pi = data;
+
+        ++(*pi);
+        pp[r][c].count = *pi;
+}
+
+static void fruity_structs_transform_test(void** state)
+{
+        (void)state;
+
+        Fruity2D fs = { 0 };
+        fruity_new(&fs, 5, 8, struct something);
+
+        struct something s = { 0 };
+        fruity_init(&fs, &s);
+
+        int count = 0;
+        fruity_transform(&fs, NULL, inc_and_set_count, &count);
+
+        struct something** p = fruity_data(&fs);
+        assert_int_equal(p[0][0].count, 1);
+        assert_int_equal(p[0][1].count, 2);
+        assert_int_equal(p[1][7].count, 16);
+        assert_int_equal(p[2][0].count, 17);
+        assert_int_equal(p[4][6].count, 39);
+        assert_int_equal(p[4][7].count, 40);
+
+        fruity_free(&fs);
+}
+
 int main(void)
 {
         const struct CMUnitTest tests[] = {
                 cmocka_unit_test(fruity_structs_new_test),
                 cmocka_unit_test(fruity_structs_initialize_test),
+                cmocka_unit_test(fruity_structs_transform_test),
         };
 
         return cmocka_run_group_tests(tests, NULL, NULL);

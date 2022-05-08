@@ -98,7 +98,7 @@ fruity_free(struct fruity_2d* pfs);
  * @param cols  Number of columns.
  * @param pfs   Out pointer to fruity_2d struct.
  */
-#define fruity_new(t, num_rows, num_cols, pfs)                          \
+#define fruity_new(pfs, num_rows, num_cols, t)                          \
         do {                                                            \
                 int r = (num_rows);                                     \
                 int c = (num_cols);                                     \

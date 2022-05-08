@@ -16,7 +16,7 @@ static void fruity_new_test(void** state)
 
         // Create 2D array
         Fruity2D ai = { 0 };
-        fruity_new(int, 10, 15, &ai);
+        fruity_new(&ai, 10, 15, int);
         // The array has "something" in it
         assert_non_null(ai.data);
         assert_int_equal(ai.rows, 10);
@@ -28,7 +28,7 @@ static void fruity_new_test(void** state)
         assert_int_equal(ai.cols, 0);
 
         Fruity2D ad = { 0 };
-        fruity_new(double, 3, 22, &ad);
+        fruity_new(&ad, 3, 22, double);
         assert_non_null(ad.data);
         assert_int_equal(ad.rows, 3);
         assert_int_equal(ad.cols, 22);
@@ -38,7 +38,7 @@ static void fruity_new_test(void** state)
         assert_int_equal(ad.cols, 0);
 
         Fruity2D ac = { 0 };
-        fruity_new(char, 1000, 1000, &ac);
+        fruity_new(&ac, 1000, 1000, char);
         assert_non_null(ac.data);
         assert_int_equal(ac.rows, 1000);
         assert_int_equal(ac.cols, 1000);
@@ -48,7 +48,7 @@ static void fruity_new_test(void** state)
         assert_int_equal(ac.cols, 0);
 
         Fruity2D as = { 0 };
-        fruity_new(struct plot, 20, 30, &as);
+        fruity_new(&as, 20, 30, struct plot);
         assert_non_null(as.data);
         assert_int_equal(as.rows, 20);
         assert_int_equal(as.cols, 30);
@@ -79,7 +79,7 @@ static void fruity_transform_test(void** state)
         (void)state;
 
         Fruity2D fi = { 0 };
-        fruity_new(int, 10, 10, &fi);
+        fruity_new(&fi, 10, 10, int);
 
         int v = 1;
         fruity_transform(&fi, NULL, int_inc, &v);
@@ -93,7 +93,7 @@ static void fruity_transform_test(void** state)
         fruity_free(&fi);
 
         Fruity2D fc = { 0 };
-        fruity_new(char, 2, 13, &fc);
+        fruity_new(&fc, 2, 13, char);
 
         char ch = 'a';
         fruity_transform(&fc, NULL, char_inc, &ch);
@@ -120,7 +120,7 @@ static void fruity_foreach_test(void** state)
         (void)state;
 
         Fruity2D fi = { 0 };
-        fruity_new(int, 5, 2, &fi);
+        fruity_new(&fi, 5, 2, int);
 
         int v = 1;
         fruity_transform(&fi, NULL, int_inc, &v);
@@ -138,7 +138,7 @@ static void fruity_initialize_test(void** state)
         (void)state;
 
         Fruity2D fi = { 0 };
-        fruity_new(int, 4, 10, &fi);
+        fruity_new(&fi, 4, 10, int);
 
         int val = 37;
         fruity_initialize(&fi, &val, sizeof(val));
@@ -158,7 +158,7 @@ static void fruity_init_test(void** state)
         (void)state;
 
         Fruity2D fd = { 0 };
-        fruity_new(double, 12, 20, &fd);
+        fruity_new(&fd, 12, 20, double);
 
         double val = 3.14159;
         fruity_init(&fd, &val);
