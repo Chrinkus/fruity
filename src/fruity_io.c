@@ -37,7 +37,7 @@ char fruity_io_delimiter = FRUITY_IO_DELIMITER_DEFAULT;
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 
 void
-fruity_io_newline(Fruity2DConst arr, int rows, void* data)
+fruity_io_newline(Fruity2DConstData arr, int rows, void* data)
 {
 	(void)arr;
 	(void)rows;
@@ -53,7 +53,7 @@ fruity_io_newline(Fruity2DConst arr, int rows, void* data)
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 
 void
-fruity_io_print_int(Fruity2DConst arr, int row, int col, void* data)
+fruity_io_print_int(Fruity2DConstData arr, int row, int col, void* data)
 {
 	const int*const*const ai = (const int*const*const)arr;
 	int width = data ? *(int*)data : 0;
@@ -62,7 +62,7 @@ fruity_io_print_int(Fruity2DConst arr, int row, int col, void* data)
 }
 
 void
-fruity_io_print_char(Fruity2DConst arr, int row, int col, void* data)
+fruity_io_print_char(Fruity2DConstData arr, int row, int col, void* data)
 {
 	const char*const*const ac = (const char*const*const)arr;
 	(void)data;

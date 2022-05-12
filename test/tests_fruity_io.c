@@ -5,7 +5,7 @@
 
 #include "fruity_io.h"
 
-void int_init_inc(Fruity2DMutable arr, int row, int col, void* data)
+void int_init_inc(Fruity2DMutableData arr, int row, int col, void* data)
 {
         int** ai = (int**)arr;
         int* val = (int*)data;
@@ -22,7 +22,7 @@ static void fruity_io_int_test(void** state)
         Fruity2D fi = { 0 };
         int rows = 5;
         int cols = 6;
-        fruity_new(&fi, rows, cols, int);
+        fruity_new(&fi, rows, cols, sizeof(int));
         assert_non_null(fruity_data(&fi));
 
         int v = 10;

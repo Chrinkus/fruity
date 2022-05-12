@@ -16,9 +16,9 @@ static void fruity_new_test(void** state)
 
         // Create 2D array
         Fruity2D ai = { 0 };
-        fruity_new(&ai, 10, 15, int);
+        void* res = fruity_new(&ai, 10, 15, sizeof(int));
         // The array has "something" in it
-        assert_non_null(ai.data);
+        assert_non_null(res);
         assert_int_equal(ai.rows, 10);
         assert_int_equal(ai.cols, 15);
         // Clean up allocation
@@ -28,8 +28,8 @@ static void fruity_new_test(void** state)
         assert_int_equal(ai.cols, 0);
 
         Fruity2D ad = { 0 };
-        fruity_new(&ad, 3, 22, double);
-        assert_non_null(ad.data);
+        res = fruity_new(&ad, 3, 22, sizeof(double));
+        assert_non_null(res);
         assert_int_equal(ad.rows, 3);
         assert_int_equal(ad.cols, 22);
         fruity_free(&ad);
@@ -38,8 +38,8 @@ static void fruity_new_test(void** state)
         assert_int_equal(ad.cols, 0);
 
         Fruity2D ac = { 0 };
-        fruity_new(&ac, 1000, 1000, char);
-        assert_non_null(ac.data);
+        res = fruity_new(&ac, 1000, 1000, sizeof(char));
+        assert_non_null(res);
         assert_int_equal(ac.rows, 1000);
         assert_int_equal(ac.cols, 1000);
         fruity_free(&ac);
@@ -48,8 +48,8 @@ static void fruity_new_test(void** state)
         assert_int_equal(ac.cols, 0);
 
         Fruity2D as = { 0 };
-        fruity_new(&as, 20, 30, struct plot);
-        assert_non_null(as.data);
+        res = fruity_new(&as, 20, 30, sizeof(struct plot));
+        assert_non_null(res);
         assert_int_equal(as.rows, 20);
         assert_int_equal(as.cols, 30);
         fruity_free(&as);
@@ -58,7 +58,7 @@ static void fruity_new_test(void** state)
         assert_int_equal(as.cols, 0);
 }
 
-static void int_inc(Fruity2DMutable arr, int r, int c, void* data)
+static void int_inc(Fruity2DMutableData arr, int r, int c, void* data)
 {
         int** ai = (int**)arr;
         int* p = (int*)data;
@@ -66,7 +66,7 @@ static void int_inc(Fruity2DMutable arr, int r, int c, void* data)
         ai[r][c] = (*p)++;
 }
 
-static void char_inc(Fruity2DMutable arr, int r, int c, void* data)
+static void char_inc(Fruity2DMutableData arr, int r, int c, void* data)
 {
         char** ac = (char**)arr;
         char* p = (char*)data;
@@ -79,7 +79,8 @@ static void fruity_transform_test(void** state)
         (void)state;
 
         Fruity2D fi = { 0 };
-        fruity_new(&fi, 10, 10, int);
+        void* res = fruity_new(&fi, 10, 10, sizeof(int));
+        assert_non_null(res);
 
         int v = 1;
         fruity_transform(&fi, NULL, int_inc, &v);
@@ -93,7 +94,8 @@ static void fruity_transform_test(void** state)
         fruity_free(&fi);
 
         Fruity2D fc = { 0 };
-        fruity_new(&fc, 2, 13, char);
+        res = fruity_new(&fc, 2, 13, sizeof(char));
+        assert_non_null(res);
 
         char ch = 'a';
         fruity_transform(&fc, NULL, char_inc, &ch);
@@ -107,7 +109,7 @@ static void fruity_transform_test(void** state)
         fruity_free(&fc);
 }
 
-void accumulate(Fruity2DConst arr, int r, int c, void* data)
+void accumulate(Fruity2DConstData arr, int r, int c, void* data)
 {
         const int*const*const ai = (const int*const*const)arr;
         int* p = (int*)data;
@@ -120,7 +122,8 @@ static void fruity_foreach_test(void** state)
         (void)state;
 
         Fruity2D fi = { 0 };
-        fruity_new(&fi, 5, 2, int);
+        void* res = fruity_new(&fi, 5, 2, sizeof(int));
+        assert_non_null(res);
 
         int v = 1;
         fruity_transform(&fi, NULL, int_inc, &v);
@@ -133,43 +136,40 @@ static void fruity_foreach_test(void** state)
         fruity_free(&fi);
 }
 
-static void fruity_initialize_test(void** state)
-{
-        (void)state;
-
-        Fruity2D fi = { 0 };
-        fruity_new(&fi, 4, 10, int);
-
-        int val = 37;
-        fruity_initialize(&fi, &val, sizeof(val));
-
-        int** p = fruity_data(&fi);
-        assert_int_equal(p[0][0], 37);
-        assert_int_equal(p[0][1], 37);
-        assert_int_equal(p[2][4], 37);
-        assert_int_equal(p[2][5], 37);
-        assert_int_equal(p[3][9], 37);
-
-        fruity_free(&fi);
-}
-
 static void fruity_init_test(void** state)
 {
         (void)state;
 
+        Fruity2D fi = { 0 };
+        void* res = fruity_new(&fi, 4, 10, sizeof(int));
+        assert_non_null(res);
+
+        int ival = 37;
+        fruity_init(&fi, &ival, sizeof(ival));
+
+        int** pi = fruity_data(&fi);
+        assert_int_equal(pi[0][0], 37);
+        assert_int_equal(pi[0][1], 37);
+        assert_int_equal(pi[2][4], 37);
+        assert_int_equal(pi[2][5], 37);
+        assert_int_equal(pi[3][9], 37);
+
+        fruity_free(&fi);
+
         Fruity2D fd = { 0 };
-        fruity_new(&fd, 12, 20, double);
+        fruity_new(&fd, 12, 20, sizeof(double));
+        assert_non_null(res);
 
-        double val = 3.14159;
-        fruity_init(&fd, &val);
+        double dval = 3.14159;
+        fruity_init(&fd, &dval, sizeof(dval));
 
-        double** p = fruity_data(&fd);
-        assert_float_equal(p[0][0], 3.14159, 0.000001);
-        assert_float_equal(p[0][1], 3.14159, 0.000001);
-        assert_float_equal(p[5][6], 3.14159, 0.000001);
-        assert_float_equal(p[5][7], 3.14159, 0.000001);
-        assert_float_equal(p[11][18], 3.14159, 0.000001);
-        assert_float_equal(p[11][19], 3.14159, 0.000001);
+        double** pd = fruity_data(&fd);
+        assert_float_equal(pd[0][0], 3.14159, 0.000001);
+        assert_float_equal(pd[0][1], 3.14159, 0.000001);
+        assert_float_equal(pd[5][6], 3.14159, 0.000001);
+        assert_float_equal(pd[5][7], 3.14159, 0.000001);
+        assert_float_equal(pd[11][18], 3.14159, 0.000001);
+        assert_float_equal(pd[11][19], 3.14159, 0.000001);
 
         fruity_free(&fd);
 }
@@ -180,7 +180,6 @@ int main(void)
                 cmocka_unit_test(fruity_new_test),
                 cmocka_unit_test(fruity_transform_test),
                 cmocka_unit_test(fruity_foreach_test),
-                cmocka_unit_test(fruity_initialize_test),
                 cmocka_unit_test(fruity_init_test),
         };
 

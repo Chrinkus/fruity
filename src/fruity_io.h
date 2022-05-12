@@ -56,7 +56,7 @@ enum { FRUITY_IO_DELIMITER_DEFAULT = '\0' };
  * @param data	Optional userdata (unused).
  */
 void
-fruity_io_newline(Fruity2DConst arr, int rows, void* data);
+fruity_io_newline(Fruity2DConstData arr, int rows, void* data);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Column Functions
@@ -76,7 +76,7 @@ fruity_io_newline(Fruity2DConst arr, int rows, void* data);
  * 		width (default width is 0).
  */
 void
-fruity_io_print_int(Fruity2DConst arr, int row, int col, void* data);
+fruity_io_print_int(Fruity2DConstData arr, int row, int col, void* data);
 
 /**
  * fruity_io_print_char
@@ -90,5 +90,5 @@ fruity_io_print_int(Fruity2DConst arr, int row, int col, void* data);
  * @param data	Unused.
  */
 void
-fruity_io_print_char(Fruity2DConst arr, int row, int col, void* data);
+fruity_io_print_char(Fruity2DConstData arr, int row, int col, void* data);
 

@@ -18,7 +18,7 @@ static void fruity_structs_new_test(void** state)
         (void)state;
 
         Fruity2D fs = { 0 };
-        fruity_new(&fs, 5, 13, struct something);
+        fruity_new(&fs, 5, 13, sizeof(struct something));
 
         struct something** p = fruity_data(&fs);
 
@@ -32,7 +32,7 @@ static void fruity_structs_initialize_test(void** state)
         (void)state;
 
         Fruity2D fs = { 0 };
-        fruity_new(&fs, 32, 8, struct something);
+        fruity_new(&fs, 32, 8, sizeof(struct something));
 
         struct something s = {
                 .id = '$',
@@ -42,7 +42,7 @@ static void fruity_structs_initialize_test(void** state)
                 .flags = 1U << 1,
         };
 
-        fruity_init(&fs, &s);
+        fruity_init(&fs, &s, sizeof(s));
 
         struct something** p = fruity_data(&fs);
 
@@ -67,7 +67,7 @@ static void fruity_structs_initialize_test(void** state)
         fruity_free(&fs);
 }
 
-static void inc_and_set_count(Fruity2DMutable ppm, int r, int c, void* data)
+static void inc_and_count(Fruity2DMutableData ppm, int r, int c, void* data)
 {
         struct something** pp = (struct something**)ppm;
         int* pi = data;
@@ -81,13 +81,13 @@ static void fruity_structs_transform_test(void** state)
         (void)state;
 
         Fruity2D fs = { 0 };
-        fruity_new(&fs, 5, 8, struct something);
+        fruity_new(&fs, 5, 8, sizeof(struct something));
 
         struct something s = { 0 };
-        fruity_init(&fs, &s);
+        fruity_init(&fs, &s, sizeof(s));
 
         int count = 0;
-        fruity_transform(&fs, NULL, inc_and_set_count, &count);
+        fruity_transform(&fs, NULL, inc_and_count, &count);
 
         struct something** p = fruity_data(&fs);
         assert_int_equal(p[0][0].count, 1);

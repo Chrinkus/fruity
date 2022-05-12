@@ -28,6 +28,11 @@
  * Fruity Types
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+/**
+ * struct fruity_2d
+ *
+ * A 2-dimensional array structure. Typedef'd as Fruity2D for ease of use.
+ */
 typedef struct fruity_2d Fruity2D;
 struct fruity_2d {
         void** data;
@@ -35,47 +40,38 @@ struct fruity_2d {
         int cols;
 };
 
-typedef const void*const*const Fruity2DConst;
-typedef void** Fruity2DMutable;
-typedef char** Fruity2DBytes;
-
-#define FRUITY_CAST_CONST(pp) (Fruity2DConst)(pp)
-#define FRUITY_CAST_MUTABLE(pp) (Fruity2DMutable)(pp)
-#define FRUITY_CAST_BYTES(pp) (Fruity2DBytes)(pp)
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Fruity Function Signatures
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-typedef void (*FruityRowFuncConst)(Fruity2DConst, int, void*);
-typedef void (*FruityColFuncConst)(Fruity2DConst, int, int, void*);
+typedef const void*const*const Fruity2DConstData;
+typedef void** Fruity2DMutableData;
 
-typedef void (*FruityRowFuncMutable)(Fruity2DMutable, int, void*);
-typedef void (*FruityColFuncMutable)(Fruity2DMutable, int, int, void*);
+typedef void (*FruityRowFunctionConst)(Fruity2DConstData, int, void*);
+typedef void (*FruityColFunctionConst)(Fruity2DConstData, int, int, void*);
+
+typedef void (*FruityRowFunctionMutable)(Fruity2DMutableData, int, void*);
+typedef void (*FruityColFunctionMutable)(Fruity2DMutableData, int, int, void*);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
- * Standard Library Function Wrappers
- *
- * Removes the need to silently include 'stdlib.h'
+ * Fruity Functions
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /**
- * fruity_malloc
+ * fruity_new
  *
- * Allocate enough space for a 2-dimensional array of the indicated type size.
- * Do not call this function directly, use `fruity_new` instead.
+ * Allocate a new 2D array of the given type. Assign the array to the data
+ * member of the provided fruity_2d struct. Set rows and columns.
  *
- * @param rows          The number of rows to allocate.
- * @param cols          The number of columns per row.
- * @param type_size     The size of the array type.
- * @param ptr_size      The size of the pointer to the array type.
+ * @param pfs   Out pointer to fruity_2d struct.
+ * @param rows  Number of rows.
+ * @param cols  Number of columns.
+ * @param size  Size of the elements.
  *
- * @return              A pointer to a block of memory sufficiently sized to
- *                      contain a 2-dimensional array of the indicated rows,
- *                      columns and type.
+ * @return      A pointer to the allocated data on success, NULL on failure.
  */
 void*
-fruity_malloc(int rows, int cols, int type_size, int ptr_size);
+fruity_new(struct fruity_2d* pfs, int rows, int cols, int size);
 
 /**
  * fruity_free
@@ -86,32 +82,6 @@ fruity_malloc(int rows, int cols, int type_size, int ptr_size);
  */
 void
 fruity_free(struct fruity_2d* pfs);
-
-/**
- * fruity_new
- *
- * Allocate a new 2D array of the given type. Assign the array to the
- * provided out-pointer.
- *
- * @param t     Type of elements.
- * @param rows  Number of rows.
- * @param cols  Number of columns.
- * @param pfs   Out pointer to fruity_2d struct.
- */
-#define fruity_new(pfs, num_rows, num_cols, t)                          \
-        do {                                                            \
-                int r = (num_rows);                                     \
-                int c = (num_cols);                                     \
-                t** ppt = fruity_malloc(r, c, sizeof(t), sizeof(t*));   \
-                if (ppt) {                                              \
-                        t* p = (t*)(ppt + r);                           \
-                        for (int i = 0; i < r; ++i)                     \
-                                ppt[i] = (p + i * c);                   \
-                        (pfs)->data = (void**)ppt;                      \
-                        (pfs)->rows = r;                                \
-                        (pfs)->cols = c;                                \
-                }                                                       \
-        } while (0)
 
 /**
  * fruity_data
@@ -134,7 +104,6 @@ fruity_data(struct fruity_2d* pfs)
         return (void*)pfs->data;
 }
 
-
 /**
  * fruity_foreach
  *
@@ -147,8 +116,8 @@ fruity_data(struct fruity_2d* pfs)
  */
 void
 fruity_foreach(const struct fruity_2d* pfs, 
-                FruityRowFuncConst row_func,
-                FruityColFuncConst col_func,
+                FruityRowFunctionConst row_func,
+                FruityColFunctionConst col_func,
                 void* userdata);
 /**
  * fruity_transform
@@ -163,12 +132,12 @@ fruity_foreach(const struct fruity_2d* pfs,
  */
 void
 fruity_transform(struct fruity_2d* pfs,
-                 FruityRowFuncMutable row_func,
-                 FruityColFuncMutable col_func,
+                 FruityRowFunctionMutable row_func,
+                 FruityColFunctionMutable col_func,
                  void* userdata);
 
 /**
- * fruity_initialize
+ * fruity_init
  *
  * Initialize all of the elements of a fruity_2d struct to a provided value.
  *
@@ -177,7 +146,5 @@ fruity_transform(struct fruity_2d* pfs,
  * @param size  The size in bytes of the value.
  */
 void
-fruity_initialize(struct fruity_2d* pfs, const void* value, int size);
-
-#define fruity_init(pfs, p) (fruity_initialize((pfs), (p), sizeof(*(p))))
+fruity_init(struct fruity_2d* pfs, const void* value, int size);
 
