@@ -73,6 +73,8 @@ typedef void (*FruityColFunctionMutable)(Fruity2DMutableData, int, int, void*);
 void*
 fruity_new(struct fruity_2d* pfs, int rows, int cols, int size);
 
+#define FRUITY_NEW(pfs, r, c, t) (fruity_new(pfs, r, c, sizeof(t)))
+
 /**
  * fruity_free
  *
@@ -147,4 +149,6 @@ fruity_transform(struct fruity_2d* pfs,
  */
 void
 fruity_init(struct fruity_2d* pfs, const void* value, int size);
+
+#define FRUITY_INIT(p, v) (fruity_init(pfs, pv, sizeof(*(pv))))
 
