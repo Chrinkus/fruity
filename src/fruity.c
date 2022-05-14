@@ -118,3 +118,22 @@ fruity_init(struct fruity_2d* pfs, const void* value, int size)
                         memcpy(&p[i][j * size], value, size);
 }
 
+int
+fruity_adjacent_4(struct fruity_2d* pfs, int r, int c, void* out[4], int sz)
+{
+        int count = 0;
+
+        Fruity2DByteData p = FRUITY_2D_BYTES(pfs->data);
+
+        if (r - 1 >= 0)         // UP
+                out[count++] = &p[r-1][c * sz];
+        if (c + 1 < pfs->cols)  // RIGHT
+                out[count++] = &p[r][(c+1) * sz];
+        if (r + 1 < pfs->rows)  // DOWN
+                out[count++] = &p[r+1][c * sz];
+        if (c - 1 >= 0)         // LEFT
+                out[count++] = &p[r][(c-1) * sz];
+
+        return count;
+}
+

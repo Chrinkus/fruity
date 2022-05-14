@@ -152,3 +152,25 @@ fruity_init(struct fruity_2d* pfs, const void* value, int size);
 
 #define FRUITY_INIT(p, v) (fruity_init(pfs, pv, sizeof(*(pv))))
 
+/**
+ * fruity_adjacent_4
+ *
+ * Get pointers to the 4 adjacent elements up, right, down, and left of the
+ * provided x and y coordinates. If the coordinates are on the edge there
+ * will be less than 4 values in the out array.
+ *
+ * The caller may need to cast their out array to void** to silence warnings.
+ *
+ * Returns the number of adjacents in the array.
+ *
+ * @param pfs   A pointer to the fruity_2d struct.
+ * @param r     The row of the source coordinate.
+ * @param c     The column of the source coordinate.
+ * @param out   An array of pointers to the adjacent elements.
+ * @param sz    The size of the elements of the 2D array.
+ *
+ * @return      The number of adjacent elements found.
+ */
+int
+fruity_adjacent_4(struct fruity_2d* pfs, int r, int c, void* out[4], int sz);
+

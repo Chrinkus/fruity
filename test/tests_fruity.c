@@ -174,6 +174,47 @@ static void fruity_init_test(void** state)
         fruity_free(&fd);
 }
 
+static void fruity_adjacent_4_test(void** state)
+        // [1][2][3]
+        // [4][5][6]
+        // [7][8][9]
+{
+        (void)state;
+
+        Fruity2D fi = { 0 };
+        void* res = FRUITY_NEW(&fi, 3, 3, int);
+        assert_non_null(res);
+
+        int v = 1;
+        fruity_transform(&fi, NULL, int_inc, &v);
+
+        int* adj[4] = { 0 };
+        int n = fruity_adjacent_4(&fi, 0, 0, (void**)adj, sizeof(int));
+        assert_int_equal(n, 2);
+        assert_int_equal(*adj[0], 2);
+        assert_int_equal(*adj[1], 4);
+
+        n = fruity_adjacent_4(&fi, 1, 2, (void**)adj, sizeof(int));
+        assert_int_equal(n, 3);
+        assert_int_equal(*adj[0], 3);
+        assert_int_equal(*adj[1], 9);
+        assert_int_equal(*adj[2], 5);
+
+        n = fruity_adjacent_4(&fi, 1, 1, (void**)adj, sizeof(int));
+        assert_int_equal(n, 4);
+        assert_int_equal(*adj[0], 2);
+        assert_int_equal(*adj[1], 6);
+        assert_int_equal(*adj[2], 8);
+        assert_int_equal(*adj[3], 4);
+
+        n = fruity_adjacent_4(&fi, 2, 2, (void**)adj, sizeof(int));
+        assert_int_equal(n, 2);
+        assert_int_equal(*adj[0], 6);
+        assert_int_equal(*adj[1], 8);
+
+        fruity_free(&fi);
+}
+
 int main(void)
 {
         const struct CMUnitTest tests[] = {
@@ -181,6 +222,7 @@ int main(void)
                 cmocka_unit_test(fruity_transform_test),
                 cmocka_unit_test(fruity_foreach_test),
                 cmocka_unit_test(fruity_init_test),
+                cmocka_unit_test(fruity_adjacent_4_test),
         };
 
         return cmocka_run_group_tests(tests, NULL, NULL);
