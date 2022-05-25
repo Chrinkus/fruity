@@ -60,6 +60,7 @@ fruity_new(struct fruity_2d* pfs, int rows, int cols, int size)
                 pfs->data = FRUITY_2D_MUTABLE(pp);
                 pfs->rows = rows;
                 pfs->cols = cols;
+                pfs->size = size;
         }
 
         return (void*)pp;
@@ -69,9 +70,7 @@ void
 fruity_free(struct fruity_2d* pfs)
 {
         free(pfs->data);
-        pfs->data = NULL;
-        pfs->rows = 0;
-        pfs->cols = 0;
+        memset(pfs, 0, sizeof(struct fruity_2d));
 }
 
 void
@@ -109,30 +108,49 @@ fruity_transform(struct fruity_2d* pfs,
 }
 
 void
-fruity_init(struct fruity_2d* pfs, const void* value, int size)
+fruity_init(struct fruity_2d* pfs, const void* value)
 {
         Fruity2DByteData p = FRUITY_2D_BYTES(pfs->data);
 
+        const int sz = pfs->size;
         for (int i = 0; i < pfs->rows; ++i)
                 for (int j = 0; j < pfs->cols; ++j)
-                        memcpy(&p[i][j * size], value, size);
+                        memcpy(&p[i][j * sz], value, sz);
 }
 
 int
-fruity_adjacent_4(struct fruity_2d* pfs, int r, int c, void* out[4], int sz)
+fruity_adjacent_4(struct fruity_2d* pfs, const int r, const int c,
+                struct fruity_2d_cell adj[4])
 {
         int count = 0;
+        const int sz = pfs->size;
 
         Fruity2DByteData p = FRUITY_2D_BYTES(pfs->data);
 
         if (r - 1 >= 0)         // UP
-                out[count++] = &p[r-1][c * sz];
+                adj[count++] = (struct fruity_2d_cell){
+                        .ptr = &p[r - 1][c * sz],
+                        .row = r - 1,
+                        .col = c,
+                };
         if (c + 1 < pfs->cols)  // RIGHT
-                out[count++] = &p[r][(c+1) * sz];
+                adj[count++] = (struct fruity_2d_cell){
+                        .ptr = &p[r][(c + 1) * sz],
+                        .row = r,
+                        .col = c + 1,
+                };
         if (r + 1 < pfs->rows)  // DOWN
-                out[count++] = &p[r+1][c * sz];
+                adj[count++] = (struct fruity_2d_cell){
+                        .ptr = &p[r + 1][c * sz],
+                        .row = r + 1,
+                        .col = c,
+                };
         if (c - 1 >= 0)         // LEFT
-                out[count++] = &p[r][(c-1) * sz];
+                adj[count++] = (struct fruity_2d_cell){
+                        .ptr = &p[r][(c - 1) * sz],
+                        .row = r,
+                        .col = c - 1,
+                };
 
         return count;
 }

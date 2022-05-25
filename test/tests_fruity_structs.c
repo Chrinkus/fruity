@@ -42,7 +42,7 @@ static void fruity_structs_initialize_test(void** state)
                 .flags = 1U << 1,
         };
 
-        fruity_init(&fs, &s, sizeof(s));
+        fruity_init(&fs, &s);
 
         struct something** p = fruity_data(&fs);
 
@@ -84,7 +84,7 @@ static void fruity_structs_transform_test(void** state)
         fruity_new(&fs, 5, 8, sizeof(struct something));
 
         struct something s = { 0 };
-        fruity_init(&fs, &s, sizeof(s));
+        fruity_init(&fs, &s);
 
         int count = 0;
         fruity_transform(&fs, NULL, inc_and_count, &count);

@@ -26,18 +26,43 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Fruity Types
+ *
+ * All structs are typedef'd for ease of use.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /**
  * struct fruity_2d
  *
- * A 2-dimensional array structure. Typedef'd as Fruity2D for ease of use.
+ * A 2-dimensional array structure.
+ *
+ * @member data A pointer to the allocated structure.
+ * @member rows The number of rows in the 2D structure.
+ * @member cols The number of columns in the 2D structure.
+ * @member size The size of the elements of the 2D structure in bytes.
  */
 typedef struct fruity_2d Fruity2D;
 struct fruity_2d {
         void** data;
         int rows;
         int cols;
+        int size;
+};
+
+/**
+ * struct fruity_2d_cell
+ *
+ * An cell within a 2D structure. Contains both a pointer to the element
+ * and the row and column of the element.
+ *
+ * @member ptr  A pointer to the element.
+ * @member row  The row of the element.
+ * @member col  The column of the element.
+ */
+typedef struct fruity_2d_cell Fruity2DCell;
+struct fruity_2d_cell {
+        void* ptr;
+        int row;
+        int col;
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -72,8 +97,6 @@ typedef void (*FruityColFunctionMutable)(Fruity2DMutableData, int, int, void*);
  */
 void*
 fruity_new(struct fruity_2d* pfs, int rows, int cols, int size);
-
-#define FRUITY_NEW(pfs, r, c, t) (fruity_new(pfs, r, c, sizeof(t)))
 
 /**
  * fruity_free
@@ -145,19 +168,16 @@ fruity_transform(struct fruity_2d* pfs,
  *
  * @param pfs   A pointer to the fruity_2d struct to initialize.
  * @param value A read-only pointer to a value to use as initial data.
- * @param size  The size in bytes of the value.
  */
 void
-fruity_init(struct fruity_2d* pfs, const void* value, int size);
-
-#define FRUITY_INIT(p, v) (fruity_init(pfs, pv, sizeof(*(pv))))
+fruity_init(struct fruity_2d* pfs, const void* value);
 
 /**
  * fruity_adjacent_4
  *
  * Get pointers to the 4 adjacent elements up, right, down, and left of the
- * provided x and y coordinates. If the coordinates are on the edge there
- * will be less than 4 values in the out array.
+ * provided row and column coordinates. If the coordinates are on the edge
+ * there will be less than 4 values in the out array.
  *
  * The caller may need to cast their out array to void** to silence warnings.
  *
@@ -166,11 +186,11 @@ fruity_init(struct fruity_2d* pfs, const void* value, int size);
  * @param pfs   A pointer to the fruity_2d struct.
  * @param r     The row of the source coordinate.
  * @param c     The column of the source coordinate.
- * @param out   An array of pointers to the adjacent elements.
- * @param sz    The size of the elements of the 2D array.
+ * @param adj   An array of fruity 2D element structs.
  *
  * @return      The number of adjacent elements found.
  */
 int
-fruity_adjacent_4(struct fruity_2d* pfs, int r, int c, void* out[4], int sz);
+fruity_adjacent_4(struct fruity_2d* pfs, const int r, const int c,
+                struct fruity_2d_cell adj[4]);
 

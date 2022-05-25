@@ -21,11 +21,13 @@ static void fruity_new_test(void** state)
         assert_non_null(res);
         assert_int_equal(ai.rows, 10);
         assert_int_equal(ai.cols, 15);
+        assert_int_equal(ai.size, sizeof(int));
         // Clean up allocation
         fruity_free(&ai);
         assert_null(ai.data);
         assert_int_equal(ai.rows, 0);
         assert_int_equal(ai.cols, 0);
+        assert_int_equal(ai.size, 0);
 
         Fruity2D ad = { 0 };
         res = fruity_new(&ad, 3, 22, sizeof(double));
@@ -145,7 +147,7 @@ static void fruity_init_test(void** state)
         assert_non_null(res);
 
         int ival = 37;
-        fruity_init(&fi, &ival, sizeof(ival));
+        fruity_init(&fi, &ival);
 
         int** pi = fruity_data(&fi);
         assert_int_equal(pi[0][0], 37);
@@ -161,7 +163,7 @@ static void fruity_init_test(void** state)
         assert_non_null(res);
 
         double dval = 3.14159;
-        fruity_init(&fd, &dval, sizeof(dval));
+        fruity_init(&fd, &dval);
 
         double** pd = fruity_data(&fd);
         assert_float_equal(pd[0][0], 3.14159, 0.000001);
@@ -182,35 +184,35 @@ static void fruity_adjacent_4_test(void** state)
         (void)state;
 
         Fruity2D fi = { 0 };
-        void* res = FRUITY_NEW(&fi, 3, 3, int);
+        void* res = fruity_new(&fi, 3, 3, sizeof(int));
         assert_non_null(res);
 
         int v = 1;
         fruity_transform(&fi, NULL, int_inc, &v);
 
-        int* adj[4] = { 0 };
-        int n = fruity_adjacent_4(&fi, 0, 0, (void**)adj, sizeof(int));
+        Fruity2DCell adj[4] = { 0 };
+        int n = fruity_adjacent_4(&fi, 0, 0, adj);
         assert_int_equal(n, 2);
-        assert_int_equal(*adj[0], 2);
-        assert_int_equal(*adj[1], 4);
+        assert_int_equal(*(int*)adj[0].ptr, 2);
+        assert_int_equal(*(int*)adj[1].ptr, 4);
 
-        n = fruity_adjacent_4(&fi, 1, 2, (void**)adj, sizeof(int));
+        n = fruity_adjacent_4(&fi, 1, 2, adj);
         assert_int_equal(n, 3);
-        assert_int_equal(*adj[0], 3);
-        assert_int_equal(*adj[1], 9);
-        assert_int_equal(*adj[2], 5);
+        assert_int_equal(*(int*)adj[0].ptr, 3);
+        assert_int_equal(*(int*)adj[1].ptr, 9);
+        assert_int_equal(*(int*)adj[2].ptr, 5);
 
-        n = fruity_adjacent_4(&fi, 1, 1, (void**)adj, sizeof(int));
+        n = fruity_adjacent_4(&fi, 1, 1, adj);
         assert_int_equal(n, 4);
-        assert_int_equal(*adj[0], 2);
-        assert_int_equal(*adj[1], 6);
-        assert_int_equal(*adj[2], 8);
-        assert_int_equal(*adj[3], 4);
+        assert_int_equal(*(int*)adj[0].ptr, 2);
+        assert_int_equal(*(int*)adj[1].ptr, 6);
+        assert_int_equal(*(int*)adj[2].ptr, 8);
+        assert_int_equal(*(int*)adj[3].ptr, 4);
 
-        n = fruity_adjacent_4(&fi, 2, 2, (void**)adj, sizeof(int));
+        n = fruity_adjacent_4(&fi, 2, 2, adj);
         assert_int_equal(n, 2);
-        assert_int_equal(*adj[0], 6);
-        assert_int_equal(*adj[1], 8);
+        assert_int_equal(*(int*)adj[0].ptr, 6);
+        assert_int_equal(*(int*)adj[1].ptr, 8);
 
         fruity_free(&fi);
 }
