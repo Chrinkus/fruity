@@ -44,6 +44,12 @@ typedef FruityByte** Fruity2DByteData;
 void* 
 fruity_data(struct fruity_2d* pfs);
 
+const void*
+fruity_get(const struct fruity_2d* pfs, int row, int col);
+
+void*
+fruity_get_mutable(struct fruity_2d* pfs, int row, int col);
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Fruity Functions
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 

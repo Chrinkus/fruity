@@ -130,6 +130,40 @@ fruity_data(struct fruity_2d* pfs)
 }
 
 /**
+ * fruity_get
+ *
+ * Get a read-only pointer to a cell in a fruity_2d struct.
+ *
+ * @param pfs   A read-only pointer to the fruity_2d struct.
+ * @param row   The row location of the cell.
+ * @param col   The column location of the cell.
+ *
+ * @return      A read-only pointer to the cell.
+ */
+inline const void*
+fruity_get(const struct fruity_2d* pfs, int row, int col)
+{
+        return &((char**)pfs->data)[row][col * pfs->size];
+}
+
+/**
+ * fruity_get_mutable
+ *
+ * Get a pointer to a cell in a fruity_2d struct.
+ *
+ * @param pfs   A pointer to the fruity_2d struct.
+ * @param row   The row location of the cell.
+ * @param col   The column location of the cell.
+ *
+ * @return      A mutable pointer to the cell.
+ */
+inline void*
+fruity_get_mutable(struct fruity_2d* pfs, int row, int col)
+{
+        return &((char**)pfs->data)[row][col * pfs->size];
+}
+
+/**
  * fruity_foreach
  *
  * Perform operations on a read-only 2D array.

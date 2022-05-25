@@ -93,6 +93,12 @@ static void fruity_transform_test(void** state)
         assert_int_equal(ppi[5][5], 56);
         assert_int_equal(ppi[9][9], 100);
 
+        const int* cpi = fruity_get(&fi, 9, 9);
+        assert_int_equal(*cpi, 100);
+
+        int* pi = fruity_get_mutable(&fi, 5, 5);
+        assert_int_equal(*pi, 56);
+
         fruity_free(&fi);
 
         Fruity2D fc = { 0 };
@@ -149,12 +155,12 @@ static void fruity_init_test(void** state)
         int ival = 37;
         fruity_init(&fi, &ival);
 
-        int** pi = fruity_data(&fi);
-        assert_int_equal(pi[0][0], 37);
-        assert_int_equal(pi[0][1], 37);
-        assert_int_equal(pi[2][4], 37);
-        assert_int_equal(pi[2][5], 37);
-        assert_int_equal(pi[3][9], 37);
+        int** ppi = fruity_data(&fi);
+        assert_int_equal(ppi[0][0], 37);
+        assert_int_equal(ppi[0][1], 37);
+        assert_int_equal(ppi[2][4], 37);
+        assert_int_equal(ppi[2][5], 37);
+        assert_int_equal(ppi[3][9], 37);
 
         fruity_free(&fi);
 
