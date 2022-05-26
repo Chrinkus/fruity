@@ -27,17 +27,6 @@
 #include <string.h>
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Convenience Types and Defs
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
-
-typedef char FruityByte;
-typedef FruityByte** Fruity2DByteData;
-
-#define FRUITY_2D_BYTES(pp) (Fruity2DByteData)(pp)
-#define FRUITY_2D_CONST(pp) (Fruity2DConstData)(pp)
-#define FRUITY_2D_MUTABLE(pp) (Fruity2DMutableData)(pp)
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * Fruity inline getter symbols
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 
@@ -63,7 +52,7 @@ fruity_new(struct fruity_2d* pfs, int rows, int cols, int size)
                 char* arr = (char*)(pp + rows);
                 for (int i = 0; i < rows; ++i)
                         pp[i] = (arr + i * cols * size);
-                pfs->data = FRUITY_2D_MUTABLE(pp);
+                pfs->data = (void**)pp;
                 pfs->rows = rows;
                 pfs->cols = cols;
                 pfs->size = size;
@@ -81,44 +70,46 @@ fruity_free(struct fruity_2d* pfs)
 
 void
 fruity_foreach(const struct fruity_2d* pfs,
-                FruityRowFunctionConst row_func,
+                FruityRowFunction row_func,
+                void* row_data,
                 FruityColFunctionConst col_func,
-                void* userdata)
+                void* col_data)
 {
-        Fruity2DConstData p = FRUITY_2D_CONST(pfs->data);
+        const char*const*const p = (const char*const*const)pfs->data;
 
         for (int i = 0; i < pfs->rows; ++i) {
                 for (int j = 0; j < pfs->cols; ++j)
                         if (col_func)
-                                col_func(p, i, j, userdata);
+                                col_func(&p[i][j * pfs->size], col_data);
                 if (row_func)
-                        row_func(p, i, userdata);
+                        row_func(row_data, col_data);
         }
 }
 
 void
 fruity_transform(struct fruity_2d* pfs,
-                 FruityRowFunctionMutable row_func,
+                 FruityRowFunction row_func,
+                 void* row_data,
                  FruityColFunctionMutable col_func,
-                 void* userdata)
+                 void* col_data)
 {
-        Fruity2DMutableData p = FRUITY_2D_MUTABLE(pfs->data);
+        char** p = (char**)pfs->data;
 
         for (int i = 0; i < pfs->rows; ++i) {
                 for (int j = 0; j < pfs->cols; ++j)
                         if (col_func)
-                                col_func(p, i, j, userdata);
+                                col_func(&p[i][j * pfs->size], col_data);
                 if (row_func)
-                        row_func(p, i, userdata);
+                        row_func(row_data, col_data);
         }
 }
 
 void
 fruity_init(struct fruity_2d* pfs, const void* value)
 {
-        Fruity2DByteData p = FRUITY_2D_BYTES(pfs->data);
-
+        char** p = (char**)pfs->data;
         const int sz = pfs->size;
+
         for (int i = 0; i < pfs->rows; ++i)
                 for (int j = 0; j < pfs->cols; ++j)
                         memcpy(&p[i][j * sz], value, sz);
@@ -129,9 +120,8 @@ fruity_adjacent_4(struct fruity_2d* pfs, const int r, const int c,
                 struct fruity_2d_cell adj[4])
 {
         int count = 0;
+        char** p = (char**)pfs->data;
         const int sz = pfs->size;
-
-        Fruity2DByteData p = FRUITY_2D_BYTES(pfs->data);
 
         if (r - 1 >= 0)         // UP
                 adj[count++] = (struct fruity_2d_cell){

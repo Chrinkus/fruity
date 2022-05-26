@@ -48,15 +48,14 @@ enum { FRUITY_IO_DELIMITER_DEFAULT = '\0' };
 /**
  * fruity_io_newline
  *
- * A const utility function used to print a newline at the end of a row.
- * Matches `FruityRowFuncConst` signature.
+ * A utility function used to print a newline at the end of a row.
+ * Matches `FruityRowFunction` signature.
  *
- * @param arr	The array to print (unused).
- * @param rows	The number of rows in the array (unused).
- * @param data	Optional userdata (unused).
+ * @param row_data      Optional user data (unused).
+ * @param col_data      Optional user data (unused).
  */
 void
-fruity_io_newline(Fruity2DConstData arr, int rows, void* data);
+fruity_io_newline(void* row_data, void* col_data);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Column Functions
@@ -65,30 +64,26 @@ fruity_io_newline(Fruity2DConstData arr, int rows, void* data);
 /**
  * fruity_io_print_int
  *
- * A const utility function used to print integers in a 2D array. Matches
- * `FruityColFuncConst` signature. Takes a field width as the optional 'data'
- * parameter.
+ * A utility function used to print integers in a 2D array. Matches
+ * `FruityColFunctionConst` signature. Takes a field width as an optional
+ * 'data' parameter.
  *
- * @param arr	The array to print from.
- * @param row	The row location to print.
- * @param col	The column location to print.
- * @param data	A pointer to an integer to be used to optionally set the field
- * 		width (default width is 0).
+ * @param element       The element to print.
+ * @param data          A pointer to an integer to be used to optionally set
+ *                      the field width (default width is 0).
  */
 void
-fruity_io_print_int(Fruity2DConstData arr, int row, int col, void* data);
+fruity_io_print_int(const void* element, void* data);
 
 /**
  * fruity_io_print_char
  *
- * A const utility functionused to print characters in a 2D array. Matches
- * `FruityColFuncConst` signature.
+ * A utility function used to print characters in a 2D array. Matches
+ * `FruityColFunctionConst` signature.
  *
- * @param arr	The array to print from.
- * @param row	The row location to print.
- * @param col	The column location to print.
- * @param data	Unused.
+ * @param element       The element to print.
+ * @param data          Unused.
  */
 void
-fruity_io_print_char(Fruity2DConstData arr, int row, int col, void* data);
+fruity_io_print_char(const void* element, void* data);
 

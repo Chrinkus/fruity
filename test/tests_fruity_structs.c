@@ -67,13 +67,13 @@ static void fruity_structs_initialize_test(void** state)
         fruity_free(&fs);
 }
 
-static void inc_and_count(Fruity2DMutableData ppm, int r, int c, void* data)
+static void inc_and_count(void* element, void* data)
 {
-        struct something** pp = (struct something**)ppm;
+        struct something* ps = element;
         int* pi = data;
 
         ++(*pi);
-        pp[r][c].count = *pi;
+        ps->count = *pi;
 }
 
 static void fruity_structs_transform_test(void** state)
@@ -87,7 +87,7 @@ static void fruity_structs_transform_test(void** state)
         fruity_init(&fs, &s);
 
         int count = 0;
-        fruity_transform(&fs, NULL, inc_and_count, &count);
+        fruity_transform(&fs, NULL, NULL, inc_and_count, &count);
 
         struct something** p = fruity_data(&fs);
         assert_int_equal(p[0][0].count, 1);

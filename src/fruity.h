@@ -69,14 +69,10 @@ struct fruity_2d_cell {
  * Fruity Function Signatures
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-typedef const void*const*const Fruity2DConstData;
-typedef void** Fruity2DMutableData;
+typedef void (*FruityRowFunction)(void* row_data, void* col_data);
 
-typedef void (*FruityRowFunctionConst)(Fruity2DConstData, int, void*);
-typedef void (*FruityColFunctionConst)(Fruity2DConstData, int, int, void*);
-
-typedef void (*FruityRowFunctionMutable)(Fruity2DMutableData, int, void*);
-typedef void (*FruityColFunctionMutable)(Fruity2DMutableData, int, int, void*);
+typedef void (*FruityColFunctionConst)(const void* element, void* col_data);
+typedef void (*FruityColFunctionMutable)(void* element, void* col_data);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Fruity Functions
@@ -170,14 +166,16 @@ fruity_get_mutable(struct fruity_2d* pfs, int row, int col)
  *
  * @param pfs           A read-only pointer to the fruity_2d struct.
  * @param row_func      A function to execute at the end of each row.
+ * @param row_data      Optional data to be passed to row function.
  * @param col_func      A function to execute for each element of the array.
- * @param user_data     Optional data to be passed to row and column functions.
+ * @param col_data      Optional data to be passed to row and column functions.
  */
 void
 fruity_foreach(const struct fruity_2d* pfs, 
-                FruityRowFunctionConst row_func,
+                FruityRowFunction row_func,
+                void* row_data,
                 FruityColFunctionConst col_func,
-                void* userdata);
+                void* col_data);
 /**
  * fruity_transform
  *
@@ -186,14 +184,16 @@ fruity_foreach(const struct fruity_2d* pfs,
  *
  * @param pfs           A pointer to the fruity_2d struct to operate on.
  * @param row_func      A function to execute at the end of each row.
+ * @param row_data      Optional data to be passed to row function.
  * @param col_func      A function to execute for each element of the array.
- * @param user_data     Optional data to be passed to row and column functions.
+ * @param col_data      Optional data to be passed to row and column functions.
  */
 void
 fruity_transform(struct fruity_2d* pfs,
-                 FruityRowFunctionMutable row_func,
+                 FruityRowFunction row_func,
+                 void* row_data,
                  FruityColFunctionMutable col_func,
-                 void* userdata);
+                 void* col_data);
 
 /**
  * fruity_init

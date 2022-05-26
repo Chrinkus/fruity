@@ -37,11 +37,10 @@ char fruity_io_delimiter = FRUITY_IO_DELIMITER_DEFAULT;
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 
 void
-fruity_io_newline(Fruity2DConstData arr, int rows, void* data)
+fruity_io_newline(void* row_data, void* col_data)
 {
-	(void)arr;
-	(void)rows;
-	(void)data;
+	(void)row_data;
+	(void)col_data;
 
 	const char* newline = fruity_io_delimiter != '\0' ? "\b \b\n" : "\n";
 
@@ -53,20 +52,20 @@ fruity_io_newline(Fruity2DConstData arr, int rows, void* data)
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 
 void
-fruity_io_print_int(Fruity2DConstData arr, int row, int col, void* data)
+fruity_io_print_int(const void* element, void* data)
 {
-	const int*const*const ai = (const int*const*const)arr;
+        const int* p = element;
 	int width = data ? *(int*)data : 0;
 
-	printf("%*d%c", width, ai[row][col], fruity_io_delimiter);
+	printf("%*d%c", width, *p, fruity_io_delimiter);
 }
 
 void
-fruity_io_print_char(Fruity2DConstData arr, int row, int col, void* data)
+fruity_io_print_char(const void* element, void* data)
 {
-	const char*const*const ac = (const char*const*const)arr;
+        const char* p = element;
 	(void)data;
 
-	printf("%c%c", ac[row][col], fruity_io_delimiter);
+	printf("%c%c", *p, fruity_io_delimiter);
 }
 

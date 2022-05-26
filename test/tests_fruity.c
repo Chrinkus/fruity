@@ -60,20 +60,20 @@ static void fruity_new_test(void** state)
         assert_int_equal(as.cols, 0);
 }
 
-static void int_inc(Fruity2DMutableData arr, int r, int c, void* data)
+static void int_inc(void* element, void* data)
 {
-        int** ai = (int**)arr;
-        int* p = (int*)data;
+        int* pi = element;
+        int* pd = data;
 
-        ai[r][c] = (*p)++;
+        *pi = (*pd)++;
 }
 
-static void char_inc(Fruity2DMutableData arr, int r, int c, void* data)
+static void char_inc(void* element, void* data)
 {
-        char** ac = (char**)arr;
-        char* p = (char*)data;
+        char* pc = element;
+        char* pd = data;
 
-        ac[r][c] = (*p)++;
+        *pc = (*pd)++;
 }
 
 static void fruity_transform_test(void** state)
@@ -85,7 +85,7 @@ static void fruity_transform_test(void** state)
         assert_non_null(res);
 
         int v = 1;
-        fruity_transform(&fi, NULL, int_inc, &v);
+        fruity_transform(&fi, NULL, NULL, int_inc, &v);
 
         int** ppi = fruity_data(&fi);
         assert_int_equal(ppi[0][0], 1);
@@ -106,7 +106,7 @@ static void fruity_transform_test(void** state)
         assert_non_null(res);
 
         char ch = 'a';
-        fruity_transform(&fc, NULL, char_inc, &ch);
+        fruity_transform(&fc, NULL, NULL, char_inc, &ch);
 
         char** ppc = fruity_data(&fc);
         assert_int_equal(ppc[0][0], 'a');
@@ -117,12 +117,12 @@ static void fruity_transform_test(void** state)
         fruity_free(&fc);
 }
 
-void accumulate(Fruity2DConstData arr, int r, int c, void* data)
+void accumulate(const void* ptr, void* data)
 {
-        const int*const*const ai = (const int*const*const)arr;
-        int* p = (int*)data;
+        const int* ele = ptr;
+        int* p = data;
 
-        *p += ai[r][c];
+        *p += *ele;
 }
 
 static void fruity_foreach_test(void** state)
@@ -134,10 +134,10 @@ static void fruity_foreach_test(void** state)
         assert_non_null(res);
 
         int v = 1;
-        fruity_transform(&fi, NULL, int_inc, &v);
+        fruity_transform(&fi, NULL, NULL, int_inc, &v);
 
         int sum = 0;
-        fruity_foreach(&fi, NULL, accumulate, &sum);
+        fruity_foreach(&fi, NULL, NULL, accumulate, &sum);
 
         assert_int_equal(sum, 55);
 
@@ -194,7 +194,7 @@ static void fruity_adjacent_4_test(void** state)
         assert_non_null(res);
 
         int v = 1;
-        fruity_transform(&fi, NULL, int_inc, &v);
+        fruity_transform(&fi, NULL, NULL, int_inc, &v);
 
         Fruity2DCell adj[4] = { 0 };
         int n = fruity_adjacent_4(&fi, 0, 0, adj);
