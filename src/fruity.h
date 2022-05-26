@@ -42,7 +42,7 @@
  */
 typedef struct fruity_2d Fruity2D;
 struct fruity_2d {
-        void** data;
+        char** data;
         int rows;
         int cols;
         int size;

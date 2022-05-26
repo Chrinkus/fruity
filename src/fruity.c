@@ -52,7 +52,7 @@ fruity_new(struct fruity_2d* pfs, int rows, int cols, int size)
                 char* arr = (char*)(pp + rows);
                 for (int i = 0; i < rows; ++i)
                         pp[i] = (arr + i * cols * size);
-                pfs->data = (void**)pp;
+                pfs->data = pp;
                 pfs->rows = rows;
                 pfs->cols = cols;
                 pfs->size = size;
@@ -75,7 +75,7 @@ fruity_foreach(const struct fruity_2d* pfs,
                 FruityColFunctionConst col_func,
                 void* col_data)
 {
-        const char*const*const p = (const char*const*const)pfs->data;
+        char** p = pfs->data;
 
         for (int i = 0; i < pfs->rows; ++i) {
                 for (int j = 0; j < pfs->cols; ++j)
@@ -93,7 +93,7 @@ fruity_transform(struct fruity_2d* pfs,
                  FruityColFunctionMutable col_func,
                  void* col_data)
 {
-        char** p = (char**)pfs->data;
+        char** p = pfs->data;
 
         for (int i = 0; i < pfs->rows; ++i) {
                 for (int j = 0; j < pfs->cols; ++j)
@@ -107,7 +107,7 @@ fruity_transform(struct fruity_2d* pfs,
 void
 fruity_init(struct fruity_2d* pfs, const void* value)
 {
-        char** p = (char**)pfs->data;
+        char** p = pfs->data;
         const int sz = pfs->size;
 
         for (int i = 0; i < pfs->rows; ++i)
@@ -120,7 +120,7 @@ fruity_adjacent_4(struct fruity_2d* pfs, const int r, const int c,
                 struct fruity_2d_cell adj[4])
 {
         int count = 0;
-        char** p = (char**)pfs->data;
+        char** p = pfs->data;
         const int sz = pfs->size;
 
         if (r - 1 >= 0)         // UP
