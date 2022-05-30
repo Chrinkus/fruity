@@ -72,7 +72,7 @@ void
 fruity_foreach(const struct fruity_2d* pfs,
                 FruityRowFunction row_func,
                 void* row_data,
-                FruityColFunctionConst col_func,
+                FruityColFunction col_func,
                 void* col_data)
 {
         char** p = pfs->data;
@@ -80,7 +80,11 @@ fruity_foreach(const struct fruity_2d* pfs,
         for (int i = 0; i < pfs->rows; ++i) {
                 for (int j = 0; j < pfs->cols; ++j)
                         if (col_func)
-                                col_func(&p[i][j * pfs->size], col_data);
+                                col_func((struct fruity_2d_cell){
+                                        .ptr = &p[i][j*pfs->size],
+                                        .row = i,
+                                        .col = j,
+                                }, col_data);
                 if (row_func)
                         row_func(row_data, col_data);
         }
@@ -90,7 +94,7 @@ void
 fruity_transform(struct fruity_2d* pfs,
                  FruityRowFunction row_func,
                  void* row_data,
-                 FruityColFunctionMutable col_func,
+                 FruityColFunction col_func,
                  void* col_data)
 {
         char** p = pfs->data;
@@ -98,7 +102,11 @@ fruity_transform(struct fruity_2d* pfs,
         for (int i = 0; i < pfs->rows; ++i) {
                 for (int j = 0; j < pfs->cols; ++j)
                         if (col_func)
-                                col_func(&p[i][j * pfs->size], col_data);
+                                col_func((struct fruity_2d_cell){
+                                        .ptr = &p[i][j*pfs->size],
+                                        .row = i,
+                                        .col = j,
+                                }, col_data);
                 if (row_func)
                         row_func(row_data, col_data);
         }

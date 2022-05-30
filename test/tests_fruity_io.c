@@ -1,13 +1,14 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <setjmp.h>
+#include <stdint.h>
 #include <cmocka.h>
 
 #include "fruity_io.h"
 
-void int_init_inc(void* element, void* data)
+void int_init_inc(Fruity2DCell cell, void* data)
 {
-        int* p = element;
+        int* p = cell.ptr;
         int* val = data;
 
         *p = *val;

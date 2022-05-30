@@ -73,7 +73,7 @@ fruity_io_newline(void* row_data, void* col_data);
  *                      the field width (default width is 0).
  */
 void
-fruity_io_print_int(const void* element, void* data);
+fruity_io_print_int(struct fruity_2d_cell cell, void* data);
 
 /**
  * fruity_io_print_char
@@ -85,5 +85,5 @@ fruity_io_print_int(const void* element, void* data);
  * @param data          Unused.
  */
 void
-fruity_io_print_char(const void* element, void* data);
+fruity_io_print_char(struct fruity_2d_cell cell, void* data);
 

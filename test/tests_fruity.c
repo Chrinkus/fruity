@@ -1,6 +1,7 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <setjmp.h>
+#include <stdint.h>
 #include <cmocka.h>
 
 #include "fruity.h"
@@ -60,17 +61,17 @@ static void fruity_new_test(void** state)
         assert_int_equal(as.cols, 0);
 }
 
-static void int_inc(void* element, void* data)
+static void int_inc(Fruity2DCell cell, void* data)
 {
-        int* pi = element;
+        int* pi = cell.ptr;
         int* pd = data;
 
         *pi = (*pd)++;
 }
 
-static void char_inc(void* element, void* data)
+static void char_inc(Fruity2DCell cell, void* data)
 {
-        char* pc = element;
+        char* pc = cell.ptr;
         char* pd = data;
 
         *pc = (*pd)++;
@@ -117,9 +118,9 @@ static void fruity_transform_test(void** state)
         fruity_free(&fc);
 }
 
-void accumulate(const void* ptr, void* data)
+void accumulate(Fruity2DCell cell, void* data)
 {
-        const int* ele = ptr;
+        const int* ele = cell.ptr;
         int* p = data;
 
         *p += *ele;

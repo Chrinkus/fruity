@@ -52,18 +52,18 @@ fruity_io_newline(void* row_data, void* col_data)
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 
 void
-fruity_io_print_int(const void* element, void* data)
+fruity_io_print_int(struct fruity_2d_cell cell, void* data)
 {
-        const int* p = element;
+        const int* p = cell.ptr;
 	int width = data ? *(int*)data : 0;
 
 	printf("%*d%c", width, *p, fruity_io_delimiter);
 }
 
 void
-fruity_io_print_char(const void* element, void* data)
+fruity_io_print_char(struct fruity_2d_cell cell, void* data)
 {
-        const char* p = element;
+        const char* p = cell.ptr;
 	(void)data;
 
 	printf("%c%c", *p, fruity_io_delimiter);

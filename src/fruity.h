@@ -71,6 +71,8 @@ struct fruity_2d_cell {
 
 typedef void (*FruityRowFunction)(void* row_data, void* col_data);
 
+typedef void (*FruityColFunction)(Fruity2DCell cell, void* col_data);
+
 typedef void (*FruityColFunctionConst)(const void* element, void* col_data);
 typedef void (*FruityColFunctionMutable)(void* element, void* col_data);
 
@@ -174,7 +176,8 @@ void
 fruity_foreach(const struct fruity_2d* pfs, 
                 FruityRowFunction row_func,
                 void* row_data,
-                FruityColFunctionConst col_func,
+                //FruityColFunctionConst col_func,
+                FruityColFunction col_func,
                 void* col_data);
 /**
  * fruity_transform
@@ -192,7 +195,8 @@ void
 fruity_transform(struct fruity_2d* pfs,
                  FruityRowFunction row_func,
                  void* row_data,
-                 FruityColFunctionMutable col_func,
+                 //FruityColFunctionMutable col_func,
+                 FruityColFunction col_func,
                  void* col_data);
 
 /**

@@ -1,6 +1,7 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <setjmp.h>
+#include <stdint.h>
 #include <cmocka.h>
 
 #include "fruity.h"
@@ -67,9 +68,9 @@ static void fruity_structs_initialize_test(void** state)
         fruity_free(&fs);
 }
 
-static void inc_and_count(void* element, void* data)
+static void inc_and_count(Fruity2DCell cell, void* data)
 {
-        struct something* ps = element;
+        struct something* ps = cell.ptr;
         int* pi = data;
 
         ++(*pi);
