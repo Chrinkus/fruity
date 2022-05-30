@@ -26,22 +26,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Fruity inline getter symbols
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
-
-void* 
-fruity_data(struct fruity_2d* pfs);
-
-const void*
-fruity_get(const struct fruity_2d* pfs, int row, int col);
-
-void*
-fruity_get_mutable(struct fruity_2d* pfs, int row, int col);
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- * Fruity Functions
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Fruity Management Functions
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void*
 fruity_new(struct fruity_2d* pfs, int rows, int cols, int size)
@@ -66,6 +53,34 @@ fruity_free(struct fruity_2d* pfs)
 {
         free(pfs->data);
         memset(pfs, 0, sizeof(struct fruity_2d));
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Fruity inline getter symbols
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
+
+void* 
+fruity_data(struct fruity_2d* pfs);
+
+const void*
+fruity_get(const struct fruity_2d* pfs, int row, int col);
+
+void*
+fruity_get_mutable(struct fruity_2d* pfs, int row, int col);
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Fruity Standard Algorithms
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+void
+fruity_init(struct fruity_2d* pfs, const void* value)
+{
+        char** p = pfs->data;
+        const int sz = pfs->size;
+
+        for (int i = 0; i < pfs->rows; ++i)
+                for (int j = 0; j < pfs->cols; ++j)
+                        memcpy(&p[i][j * sz], value, sz);
 }
 
 void
@@ -112,16 +127,9 @@ fruity_transform(struct fruity_2d* pfs,
         }
 }
 
-void
-fruity_init(struct fruity_2d* pfs, const void* value)
-{
-        char** p = pfs->data;
-        const int sz = pfs->size;
-
-        for (int i = 0; i < pfs->rows; ++i)
-                for (int j = 0; j < pfs->cols; ++j)
-                        memcpy(&p[i][j * sz], value, sz);
-}
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Fruity Pathfinding
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 int
 fruity_adjacent_4(struct fruity_2d* pfs, const int r, const int c,

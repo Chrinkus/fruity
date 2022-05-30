@@ -197,7 +197,7 @@ static void fruity_adjacent_4_test(void** state)
         int v = 1;
         fruity_transform(&fi, NULL, NULL, int_inc, &v);
 
-        Fruity2DCell adj[4] = { 0 };
+        Fruity2DCell adj[4] = { { 0 } };
         int n = fruity_adjacent_4(&fi, 0, 0, adj);
         assert_int_equal(n, 2);
         assert_int_equal(*(int*)adj[0].ptr, 2);
