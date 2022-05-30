@@ -69,15 +69,31 @@ struct fruity_2d_cell {
  * Fruity Function Signatures
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+/**
+ * FruityRowFunction
+ *
+ * The signature of a function to be passed to 'foreach' and 'transform' that
+ * will be called at the end of processing every row.
+ *
+ * @param row_data      A pointer to the user data passed for row processing.
+ * @param col_data      A pointer to the user data passed for column processing.
+ */
 typedef void (*FruityRowFunction)(void* row_data, void* col_data);
 
+/**
+ * FruityColFunction
+ *
+ * The signature of a function to be passed to 'foreach' and 'transform' that
+ * will be called for each element in the 2D array.
+ *
+ * @param cell          A fruity_2d_cell containing a pointer to the current
+ *                      element as well as the element's row and column.
+ * @param col_data      A pointer to the user data passed for column processing.
+ */
 typedef void (*FruityColFunction)(Fruity2DCell cell, void* col_data);
 
-typedef void (*FruityColFunctionConst)(const void* element, void* col_data);
-typedef void (*FruityColFunctionMutable)(void* element, void* col_data);
-
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
- * Fruity Functions
+ * Fruity Management Functions
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /**
@@ -105,6 +121,10 @@ fruity_new(struct fruity_2d* pfs, int rows, int cols, int size);
  */
 void
 fruity_free(struct fruity_2d* pfs);
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Fruity Inline Getters
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /**
  * fruity_data
@@ -161,6 +181,21 @@ fruity_get_mutable(struct fruity_2d* pfs, int row, int col)
         return &((char**)pfs->data)[row][col * pfs->size];
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Fruity Standard Algorithms
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+/**
+ * fruity_init
+ *
+ * Initialize all of the elements of a fruity_2d struct to a provided value.
+ *
+ * @param pfs   A pointer to the fruity_2d struct to initialize.
+ * @param value A read-only pointer to a value to use as initial data.
+ */
+void
+fruity_init(struct fruity_2d* pfs, const void* value);
+
 /**
  * fruity_foreach
  *
@@ -176,7 +211,6 @@ void
 fruity_foreach(const struct fruity_2d* pfs, 
                 FruityRowFunction row_func,
                 void* row_data,
-                //FruityColFunctionConst col_func,
                 FruityColFunction col_func,
                 void* col_data);
 /**
@@ -195,20 +229,12 @@ void
 fruity_transform(struct fruity_2d* pfs,
                  FruityRowFunction row_func,
                  void* row_data,
-                 //FruityColFunctionMutable col_func,
                  FruityColFunction col_func,
                  void* col_data);
 
-/**
- * fruity_init
- *
- * Initialize all of the elements of a fruity_2d struct to a provided value.
- *
- * @param pfs   A pointer to the fruity_2d struct to initialize.
- * @param value A read-only pointer to a value to use as initial data.
- */
-void
-fruity_init(struct fruity_2d* pfs, const void* value);
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Fruity Pathfinding
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /**
  * fruity_adjacent_4
