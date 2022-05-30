@@ -183,6 +183,48 @@ static void fruity_init_test(void** state)
         fruity_free(&fd);
 }
 
+int is_multiple_of(Fruity2DCell cell, void* data)
+{
+        const int* pi = cell.ptr;
+        const int* mul = data;
+
+        return *pi != 0 && *pi % *mul == 0;
+}
+
+int is_greater_than(Fruity2DCell cell, void* data)
+{
+        const int* pi = cell.ptr;
+        const int* than = data;
+
+        return *pi > *than;
+}
+
+static void fruity_count_if_test(void** state)
+{
+        (void)state;
+
+        Fruity2D fi = { 0 };
+        void* res = fruity_new(&fi, 10, 10, sizeof(int));
+        assert_non_null(res);
+
+        int v = 1;
+        fruity_transform(&fi, NULL, NULL, int_inc, &v);
+
+        int factor = 2;
+        int mul2 = fruity_count_if(&fi, is_multiple_of, &factor);
+        assert_int_equal(mul2, 50);
+
+        factor = 3;
+        int mul3 = fruity_count_if(&fi, is_multiple_of, &factor);
+        assert_int_equal(mul3, 33);
+
+        factor = 100;
+        int gt = fruity_count_if(&fi, is_greater_than, &factor);
+        assert_int_equal(gt, 0);
+
+        fruity_free(&fi);
+}
+
 static void fruity_adjacent_4_test(void** state)
         // [1][2][3]
         // [4][5][6]
@@ -231,6 +273,7 @@ int main(void)
                 cmocka_unit_test(fruity_transform_test),
                 cmocka_unit_test(fruity_foreach_test),
                 cmocka_unit_test(fruity_init_test),
+                cmocka_unit_test(fruity_count_if_test),
                 cmocka_unit_test(fruity_adjacent_4_test),
         };
 

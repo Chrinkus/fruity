@@ -127,6 +127,28 @@ fruity_transform(struct fruity_2d* pfs,
         }
 }
 
+int
+fruity_count_if(const struct fruity_2d* pfs,
+                FruityPredicate pred,
+                void* data)
+{
+        int sum = 0;
+        char** p = pfs->data;
+        for (int i = 0; i < pfs->rows; ++i)
+                for (int j = 0; j < pfs->cols; ++j) {
+                        struct fruity_2d_cell cell = {
+                                .ptr = &p[i][j * pfs->size],
+                                .row = i,
+                                .col = j,
+                        };
+                        if (pred(cell, data))
+                                ++sum;
+
+                }
+
+        return sum;
+}
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Fruity Pathfinding
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

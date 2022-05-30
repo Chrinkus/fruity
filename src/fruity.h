@@ -92,6 +92,20 @@ typedef void (*FruityRowFunction)(void* row_data, void* col_data);
  */
 typedef void (*FruityColFunction)(Fruity2DCell cell, void* col_data);
 
+/**
+ * FruityPredicate
+ *
+ * The signature of a function to be passed to 'count_if' that will be called
+ * for each element in the 2D array.
+ *
+ * @param cell  A fruity_2d_cell containing a pointer to the current element
+ *              as well as the element's row and column.
+ * @param data  A pointer to optional userdata.
+ *
+ * @return      An integer boolean value.
+ */
+typedef int (*FruityPredicate)(Fruity2DCell cell, void* data);
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Fruity Management Functions
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -213,6 +227,7 @@ fruity_foreach(const struct fruity_2d* pfs,
                 void* row_data,
                 FruityColFunction col_func,
                 void* col_data);
+
 /**
  * fruity_transform
  *
@@ -231,6 +246,25 @@ fruity_transform(struct fruity_2d* pfs,
                  void* row_data,
                  FruityColFunction col_func,
                  void* col_data);
+
+/**
+ * fruity_count_if
+ *
+ * Count the number of elements in a fruity_2d struct that satisfy a given
+ * predicate.
+ *
+ * @param pfs   A read-only pointer to the fruity_2d struct to evaluate.
+ * @param pred  A function that takes a pointer to an element of the 2D array
+ *              and returns an integer boolean.
+ * @param data  Optional userdata to be passed to the predicate.
+ *
+ * @return      An integer count of the number of elements that pass the
+ *              predicate.
+ */
+int
+fruity_count_if(const struct fruity_2d* pfs,
+                FruityPredicate pred,
+                void* data);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Fruity Pathfinding
