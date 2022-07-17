@@ -21,7 +21,7 @@ static void fruity_structs_new_test(void** state)
         Fruity2D fs = { 0 };
         fruity_new(&fs, 5, 13, sizeof(struct something));
 
-        struct something** p = fruity_data(&fs);
+        const struct something*const* p = fruity_data(&fs);
 
         assert_non_null(p);
 
@@ -45,7 +45,7 @@ static void fruity_structs_initialize_test(void** state)
 
         fruity_init(&fs, &s);
 
-        struct something** p = fruity_data(&fs);
+        const struct something*const* p = fruity_data(&fs);
 
         assert_int_equal(p[0][0].id, '$');
         assert_int_equal(p[0][0].count, 42);
@@ -90,7 +90,7 @@ static void fruity_structs_transform_test(void** state)
         int count = 0;
         fruity_transform(&fs, NULL, NULL, inc_and_count, &count);
 
-        struct something** p = fruity_data(&fs);
+        const struct something*const* p = fruity_data(&fs);
         assert_int_equal(p[0][0].count, 1);
         assert_int_equal(p[0][1].count, 2);
         assert_int_equal(p[1][7].count, 16);

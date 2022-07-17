@@ -143,8 +143,29 @@ fruity_free(struct fruity_2d* pfs);
 /**
  * fruity_data
  *
- * Get a pointer to the data member of the fruity_2d struct. This is a
- * convenience function for accessing the inner data for double bracket
+ * Get a read-only pointer to the data member of the fruity_2d struct. This
+ * is a convenience function for accessing the inner data for double bracket
+ * referencing.
+ *
+ * Warning: The 'data' member is cast to a void* on return to alleviate
+ * any compiler warnings. The caller must be putting this into the
+ * appropriate type. See tests_fruity.c for examples.
+ *
+ * @param pfs   A pointer to a fruity_2d struct.
+ *
+ * @return      A read-only pointer to the data member of 'pfs'.
+ */
+inline const void*
+fruity_data(const struct fruity_2d* pfs)
+{
+        return (void*)pfs->data;
+}
+
+/**
+ * fruity_data_mutable
+ *
+ * Get a writable pointer to the data member of the fruity_2d struct. This
+ * is a convenience function for accessing the inner data for double bracket
  * referencing.
  *
  * Warning: The 'data' member is cast to a void* on return to alleviate
@@ -156,7 +177,7 @@ fruity_free(struct fruity_2d* pfs);
  * @return      A pointer to the data member of 'pfs'.
  */
 inline void* 
-fruity_data(struct fruity_2d* pfs)
+fruity_data_mutable(struct fruity_2d* pfs)
 {
         return (void*)pfs->data;
 }

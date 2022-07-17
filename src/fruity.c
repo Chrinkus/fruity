@@ -59,8 +59,11 @@ fruity_free(struct fruity_2d* pfs)
  * Fruity inline getter symbols
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 
+const void* 
+fruity_data(const struct fruity_2d* pfs);
+
 void* 
-fruity_data(struct fruity_2d* pfs);
+fruity_data_mutable(struct fruity_2d* pfs);
 
 const void*
 fruity_get(const struct fruity_2d* pfs, int row, int col);

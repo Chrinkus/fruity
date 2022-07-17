@@ -88,7 +88,7 @@ static void fruity_transform_test(void** state)
         int v = 1;
         fruity_transform(&fi, NULL, NULL, int_inc, &v);
 
-        int** ppi = fruity_data(&fi);
+        int*const* ppi = fruity_data(&fi);
         assert_int_equal(ppi[0][0], 1);
         assert_int_equal(ppi[1][0], 11);
         assert_int_equal(ppi[5][5], 56);
@@ -109,7 +109,7 @@ static void fruity_transform_test(void** state)
         char ch = 'a';
         fruity_transform(&fc, NULL, NULL, char_inc, &ch);
 
-        char** ppc = fruity_data(&fc);
+        const char*const* ppc = fruity_data(&fc);
         assert_int_equal(ppc[0][0], 'a');
         assert_int_equal(ppc[0][12], 'm');
         assert_int_equal(ppc[1][0], 'n');
@@ -156,7 +156,7 @@ static void fruity_init_test(void** state)
         int ival = 37;
         fruity_init(&fi, &ival);
 
-        int** ppi = fruity_data(&fi);
+        const int*const* ppi = fruity_data(&fi);
         assert_int_equal(ppi[0][0], 37);
         assert_int_equal(ppi[0][1], 37);
         assert_int_equal(ppi[2][4], 37);
@@ -172,7 +172,7 @@ static void fruity_init_test(void** state)
         double dval = 3.14159;
         fruity_init(&fd, &dval);
 
-        double** pd = fruity_data(&fd);
+        const double*const* pd = fruity_data(&fd);
         assert_float_equal(pd[0][0], 3.14159, 0.000001);
         assert_float_equal(pd[0][1], 3.14159, 0.000001);
         assert_float_equal(pd[5][6], 3.14159, 0.000001);
