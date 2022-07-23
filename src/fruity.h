@@ -127,6 +127,20 @@ void*
 fruity_new(struct fruity_2d* pfs, int rows, int cols, int size);
 
 /**
+ * fruity_copy
+ *
+ * Allocate a new 2D array with the dimensions of another. Fill the new
+ * 2D array with a copy of the data in the other.
+ *
+ * @param dst   The destination 2D array object.
+ * @param src   The source 2D array. (Read-only)
+ *
+ * @return      A pointer to the allocated data on success, NULL on failure.
+ */
+void*
+fruity_copy(struct fruity_2d* dst, const struct fruity_2d* src);
+
+/**
  * fruity_free
  *
  * De-allocate the memory previously allocated by a call to `fruity_new`.

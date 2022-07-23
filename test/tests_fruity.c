@@ -126,6 +126,14 @@ void accumulate(Fruity2DCell cell, void* data)
         *p += *ele;
 }
 
+void doubler(Fruity2DCell cell, void* data)
+{
+        int* ele = cell.ptr;
+        (void)data;
+
+        *ele *= 2;
+}
+
 static void fruity_foreach_test(void** state)
 {
         (void)state;
@@ -143,6 +151,46 @@ static void fruity_foreach_test(void** state)
         assert_int_equal(sum, 55);
 
         fruity_free(&fi);
+}
+
+static void fruity_copy_test(void** state)
+{
+        (void)state;
+
+        Fruity2D f1 = { 0 };
+        fruity_new(&f1, 6, 9, sizeof(int));
+
+        int v = 1;
+        fruity_transform(&f1, NULL, NULL, int_inc, &v);
+
+        Fruity2D f2 = { 0 };
+        void* res = fruity_copy(&f2, &f1);
+        assert_non_null(res);
+
+        const int*const* pi1 = fruity_data(&f1);
+        assert_non_null(pi1);
+        const int*const* pi2 = fruity_data(&f2);
+        assert_non_null(pi2);
+        assert_ptr_not_equal(pi1, pi2);
+
+        assert_int_equal(pi2[0][0], 1);
+        assert_int_equal(pi2[0][8], 9);
+        assert_int_equal(pi2[3][0], 28);
+        assert_int_equal(pi2[5][8], 54);
+
+        fruity_transform(&f1, NULL, NULL, doubler, NULL);
+        assert_int_equal(pi1[0][0], 2);
+        assert_int_equal(pi1[0][8], 18);
+        assert_int_equal(pi1[3][0], 56);
+        assert_int_equal(pi1[5][8], 108);
+
+        assert_int_equal(pi2[0][0], 1);
+        assert_int_equal(pi2[0][8], 9);
+        assert_int_equal(pi2[3][0], 28);
+        assert_int_equal(pi2[5][8], 54);
+
+        fruity_free(&f1);
+        fruity_free(&f2);
 }
 
 static void fruity_init_test(void** state)
@@ -272,6 +320,7 @@ int main(void)
                 cmocka_unit_test(fruity_new_test),
                 cmocka_unit_test(fruity_transform_test),
                 cmocka_unit_test(fruity_foreach_test),
+                cmocka_unit_test(fruity_copy_test),
                 cmocka_unit_test(fruity_init_test),
                 cmocka_unit_test(fruity_count_if_test),
                 cmocka_unit_test(fruity_adjacent_4_test),

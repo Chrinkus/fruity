@@ -48,6 +48,19 @@ fruity_new(struct fruity_2d* pfs, int rows, int cols, int size)
         return (void*)pp;
 }
 
+void*
+fruity_copy(struct fruity_2d* dst, const struct fruity_2d* src)
+{
+        if (!fruity_new(dst, src->rows, src->cols, src->size))
+                return NULL;
+
+        const void* psrc = fruity_get(src, 0, 0);
+        void* pdst = fruity_get_mutable(dst, 0, 0);
+
+        memcpy(pdst, psrc, src->size * src->rows * src->cols);
+        return (void*)dst->data;
+}
+
 void
 fruity_free(struct fruity_2d* pfs)
 {
