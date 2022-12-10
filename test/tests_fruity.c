@@ -11,7 +11,8 @@ struct plot {
         int weight;
 };
 
-static void fruity_new_test(void** state)
+static void
+fruity_new_test(void** state)
 {
         (void)state;
 
@@ -61,7 +62,8 @@ static void fruity_new_test(void** state)
         assert_int_equal(as.cols, 0);
 }
 
-static void int_inc(Fruity2DCell cell, void* data)
+static void
+int_inc(Fruity2DCell cell, void* data)
 {
         int* pi = cell.ptr;
         int* pd = data;
@@ -69,7 +71,8 @@ static void int_inc(Fruity2DCell cell, void* data)
         *pi = (*pd)++;
 }
 
-static void char_inc(Fruity2DCell cell, void* data)
+static void
+char_inc(Fruity2DCell cell, void* data)
 {
         char* pc = cell.ptr;
         char* pd = data;
@@ -77,7 +80,8 @@ static void char_inc(Fruity2DCell cell, void* data)
         *pc = (*pd)++;
 }
 
-static void fruity_transform_test(void** state)
+static void
+fruity_transform_test(void** state)
 {
         (void)state;
 
@@ -97,7 +101,7 @@ static void fruity_transform_test(void** state)
         const int* cpi = fruity_get(&fi, 9, 9);
         assert_int_equal(*cpi, 100);
 
-        int* pi = fruity_get_mutable(&fi, 5, 5);
+        int* pi = fruity_get_mut(&fi, 5, 5);
         assert_int_equal(*pi, 56);
 
         fruity_free(&fi);
@@ -118,7 +122,8 @@ static void fruity_transform_test(void** state)
         fruity_free(&fc);
 }
 
-void accumulate(Fruity2DCell cell, void* data)
+void
+accumulate(Fruity2DCell cell, void* data)
 {
         const int* ele = cell.ptr;
         int* p = data;
@@ -126,7 +131,8 @@ void accumulate(Fruity2DCell cell, void* data)
         *p += *ele;
 }
 
-void doubler(Fruity2DCell cell, void* data)
+void
+doubler(Fruity2DCell cell, void* data)
 {
         int* ele = cell.ptr;
         (void)data;
@@ -134,7 +140,8 @@ void doubler(Fruity2DCell cell, void* data)
         *ele *= 2;
 }
 
-static void fruity_foreach_test(void** state)
+static void
+fruity_foreach_test(void** state)
 {
         (void)state;
 
@@ -153,7 +160,8 @@ static void fruity_foreach_test(void** state)
         fruity_free(&fi);
 }
 
-static void fruity_copy_test(void** state)
+static void
+fruity_copy_test(void** state)
 {
         (void)state;
 
@@ -164,7 +172,7 @@ static void fruity_copy_test(void** state)
         fruity_transform(&f1, NULL, NULL, int_inc, &v);
 
         Fruity2D f2 = { 0 };
-        void* res = fruity_copy(&f2, &f1);
+        void* res = fruity_copy(&f1, &f2);
         assert_non_null(res);
 
         const int*const* pi1 = fruity_data(&f1);
@@ -193,7 +201,8 @@ static void fruity_copy_test(void** state)
         fruity_free(&f2);
 }
 
-static void fruity_init_test(void** state)
+static void
+fruity_init_test(void** state)
 {
         (void)state;
 
@@ -231,7 +240,8 @@ static void fruity_init_test(void** state)
         fruity_free(&fd);
 }
 
-int is_multiple_of(Fruity2DCell cell, void* data)
+int
+is_multiple_of(Fruity2DCell cell, void* data)
 {
         const int* pi = cell.ptr;
         const int* mul = data;
@@ -239,7 +249,8 @@ int is_multiple_of(Fruity2DCell cell, void* data)
         return *pi != 0 && *pi % *mul == 0;
 }
 
-int is_greater_than(Fruity2DCell cell, void* data)
+int
+is_greater_than(Fruity2DCell cell, void* data)
 {
         const int* pi = cell.ptr;
         const int* than = data;
@@ -247,7 +258,8 @@ int is_greater_than(Fruity2DCell cell, void* data)
         return *pi > *than;
 }
 
-static void fruity_count_if_test(void** state)
+static void
+fruity_count_if_test(void** state)
 {
         (void)state;
 
@@ -273,7 +285,8 @@ static void fruity_count_if_test(void** state)
         fruity_free(&fi);
 }
 
-static void fruity_adjacent_4_test(void** state)
+static void
+fruity_adjacent_4_test(void** state)
         // [1][2][3]
         // [4][5][6]
         // [7][8][9]

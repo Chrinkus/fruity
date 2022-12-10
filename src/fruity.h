@@ -24,6 +24,8 @@
  */
 #pragma once
 
+#include <stddef.h>
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Fruity Types
  *
@@ -43,9 +45,9 @@
 typedef struct fruity_2d Fruity2D;
 struct fruity_2d {
         char** data;
-        int rows;
-        int cols;
-        int size;
+        size_t rows;
+        size_t cols;
+        size_t size;
 };
 
 /**
@@ -61,8 +63,8 @@ struct fruity_2d {
 typedef struct fruity_2d_cell Fruity2DCell;
 struct fruity_2d_cell {
         void* ptr;
-        int row;
-        int col;
+        size_t row;
+        size_t col;
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -124,7 +126,7 @@ typedef int (*FruityPredicate)(Fruity2DCell cell, void* data);
  * @return      A pointer to the allocated data on success, NULL on failure.
  */
 void*
-fruity_new(struct fruity_2d* pfs, int rows, int cols, int size);
+fruity_new(struct fruity_2d* pfs, size_t rows, size_t cols, size_t size);
 
 /**
  * fruity_copy
@@ -132,27 +134,58 @@ fruity_new(struct fruity_2d* pfs, int rows, int cols, int size);
  * Allocate a new 2D array with the dimensions of another. Fill the new
  * 2D array with a copy of the data in the other.
  *
- * @param dst   The destination 2D array object.
  * @param src   The source 2D array. (Read-only)
+ * @param dst   The destination 2D array object.
  *
  * @return      A pointer to the allocated data on success, NULL on failure.
  */
 void*
-fruity_copy(struct fruity_2d* dst, const struct fruity_2d* src);
+fruity_copy(const struct fruity_2d* src, struct fruity_2d* dst);
 
 /**
  * fruity_free
  *
  * De-allocate the memory previously allocated by a call to `fruity_new`.
  *
- * @param pfs   A pointer to a fruity_2d struct.
+ * @param pfs   A pointer to a fruity_2d struct. Passed as 'void*' to mirror
+ *              standard library 'free'.
  */
 void
-fruity_free(struct fruity_2d* pfs);
+fruity_free(void* pfs);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Fruity Inline Getters
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+/**
+ * fruity_rows
+ *
+ * Row count getter.
+ *
+ * @param pfs   A read-only pointer to a fruity struct.
+ *
+ * @return      The number of rows in the struct.
+ */
+inline size_t
+fruity_rows(const struct fruity_2d* pfs)
+{
+        return pfs->rows;
+}
+
+/**
+ * fruity_cols
+ *
+ * Column count getter.
+ *
+ * @param pfs   A read-only pointer to a fruity struct.
+ *
+ * @return      The number of columns in the struct.
+ */
+inline size_t
+fruity_cols(const struct fruity_2d* pfs)
+{
+        return pfs->cols;
+}
 
 /**
  * fruity_data
@@ -176,7 +209,7 @@ fruity_data(const struct fruity_2d* pfs)
 }
 
 /**
- * fruity_data_mutable
+ * fruity_data_mut
  *
  * Get a writable pointer to the data member of the fruity_2d struct. This
  * is a convenience function for accessing the inner data for double bracket
@@ -191,7 +224,7 @@ fruity_data(const struct fruity_2d* pfs)
  * @return      A pointer to the data member of 'pfs'.
  */
 inline void* 
-fruity_data_mutable(struct fruity_2d* pfs)
+fruity_data_mut(struct fruity_2d* pfs)
 {
         return (void*)pfs->data;
 }
@@ -208,13 +241,13 @@ fruity_data_mutable(struct fruity_2d* pfs)
  * @return      A read-only pointer to the cell.
  */
 inline const void*
-fruity_get(const struct fruity_2d* pfs, int row, int col)
+fruity_get(const struct fruity_2d* pfs, size_t row, size_t col)
 {
         return &((char**)pfs->data)[row][col * pfs->size];
 }
 
 /**
- * fruity_get_mutable
+ * fruity_get_mut
  *
  * Get a pointer to a cell in a fruity_2d struct.
  *
@@ -225,7 +258,7 @@ fruity_get(const struct fruity_2d* pfs, int row, int col)
  * @return      A mutable pointer to the cell.
  */
 inline void*
-fruity_get_mutable(struct fruity_2d* pfs, int row, int col)
+fruity_get_mut(struct fruity_2d* pfs, size_t row, size_t col)
 {
         return &((char**)pfs->data)[row][col * pfs->size];
 }
@@ -324,6 +357,6 @@ fruity_count_if(const struct fruity_2d* pfs,
  * @return      The number of adjacent elements found.
  */
 int
-fruity_adjacent_4(struct fruity_2d* pfs, const int r, const int c,
+fruity_adjacent_4(struct fruity_2d* pfs, size_t r, size_t c,
                 struct fruity_2d_cell adj[4]);
 
