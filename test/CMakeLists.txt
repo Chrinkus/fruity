@@ -2,7 +2,7 @@ include_directories("${PROJECT_SOURCE_DIR}/src")
 
 find_package(cmocka REQUIRED)
 
-add_custom_target(tests)
+add_custom_target(tests_fruity)
 
 set(test_sources
 	"tests_fruity.c"
@@ -20,6 +20,6 @@ foreach(file IN LISTS test_sources)
 	add_executable("${bin_name}" EXCLUDE_FROM_ALL "${file}")
 	target_link_libraries("${bin_name}" PRIVATE "${LIB_NAME}" cmocka)
 	add_test(NAME "${func}" COMMAND "${bin_name}")
-	add_dependencies(tests "${bin_name}")
+	add_dependencies(tests_fruity "${bin_name}")
 endforeach()
 
