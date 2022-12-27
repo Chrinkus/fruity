@@ -42,14 +42,14 @@ extern char fruity_io_delimiter;
 enum { FRUITY_IO_DELIMITER_DEFAULT = '\0' };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
- * Row Functions
+ * Fruity Printing
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 
 /**
  * fruity_io_newline
  *
  * A utility function used to print a newline at the end of a row.
- * Matches `FruityRowFunction` signature.
+ * Matches `F2DRowFunc` signature.
  *
  * @param row_data      Optional user data (unused).
  * @param col_data      Optional user data (unused).
@@ -57,33 +57,31 @@ enum { FRUITY_IO_DELIMITER_DEFAULT = '\0' };
 void
 fruity_io_newline(void* row_data, void* col_data);
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
- * Column Functions
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
-
 /**
  * fruity_io_print_int
  *
  * A utility function used to print integers in a 2D array. Matches
- * `FruityColFunctionConst` signature. Takes a field width as an optional
- * 'data' parameter.
+ * `F2DColFunc` signature. Takes a field width as an optional 'data' parameter.
  *
  * @param element       The element to print.
  * @param data          A pointer to an integer to be used to optionally set
  *                      the field width (default width is 0).
  */
 void
-fruity_io_print_int(struct fruity_2d_cell cell, void* data);
+fruity_io_print_int(struct f2d_cell cell, void* data);
 
 /**
  * fruity_io_print_char
  *
  * A utility function used to print characters in a 2D array. Matches
- * `FruityColFunctionConst` signature.
+ * `F2DColFunc` signature.
  *
  * @param element       The element to print.
  * @param data          Unused.
  */
 void
-fruity_io_print_char(struct fruity_2d_cell cell, void* data);
+fruity_io_print_char(struct f2d_cell cell, void* data);
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Fruity Reading
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 

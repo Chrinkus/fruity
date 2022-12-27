@@ -6,9 +6,9 @@
 
 #include "fruity_io.h"
 
-void int_init_inc(Fruity2DCell cell, void* data)
+void int_init_inc(struct f2d_cell_mut cell, void* data)
 {
-        int* p = cell.ptr;
+        int* p = cell.data;
         int* val = data;
 
         *p = *val;
@@ -19,7 +19,7 @@ static void fruity_io_int_test(void** state)
 {
         (void)state;
 
-        Fruity2D fi = { 0 };
+        struct fruity_2d fi = { 0 };
         int rows = 5;
         int cols = 6;
         fruity_new(&fi, rows, cols, sizeof(int));
