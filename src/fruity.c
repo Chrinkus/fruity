@@ -31,13 +31,13 @@
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 void*
-fruity_new(struct fruity_2d* pfs, size_t rows, size_t cols, size_t size)
+fruity_new(struct fruity_2d* pfs, int rows, int cols, size_t size)
 {
         char** pp = malloc(rows * sizeof(char*) + rows * cols * size);
 
         if (pp) {
                 char* arr = (char*)(pp + rows);
-                for (size_t i = 0; i < rows; ++i)
+                for (int i = 0; i < rows; ++i)
                         pp[i] = (arr + i * cols * size);
                 pfs->data = pp;
                 pfs->rows = rows;
@@ -58,7 +58,7 @@ fruity_copy(const struct fruity_2d* src, struct fruity_2d* dst)
         void* pdst = fruity_get_mut(dst, 0, 0);
 
         memcpy(pdst, psrc, src->size * src->rows * src->cols);
-        return (void*)dst->data;
+        return dst;
 }
 
 void
@@ -74,10 +74,10 @@ fruity_free(void* p)
  * Fruity inline getter symbols
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 
-size_t
+int
 fruity_rows(const struct fruity_2d* pfs);
 
-size_t
+int
 fruity_cols(const struct fruity_2d* pfs);
 
 const void* 
@@ -87,10 +87,10 @@ void*
 fruity_data_mut(struct fruity_2d* pfs);
 
 const void*
-fruity_get(const struct fruity_2d* pfs, size_t row, size_t col);
+fruity_get(const struct fruity_2d* pfs, int row, int col);
 
 void*
-fruity_get_mut(struct fruity_2d* pfs, size_t row, size_t col);
+fruity_get_mut(struct fruity_2d* pfs, int row, int col);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Fruity Standard Algorithms
@@ -102,27 +102,26 @@ fruity_init(struct fruity_2d* pfs, const void* value)
         char** p = pfs->data;
         const size_t sz = pfs->size;
 
-        for (size_t i = 0; i < pfs->rows; ++i)
-                for (size_t j = 0; j < pfs->cols; ++j)
+        for (int i = 0; i < pfs->rows; ++i)
+                for (int j = 0; j < pfs->cols; ++j)
                         memcpy(&p[i][j * sz], value, sz);
 }
 
 void
 fruity_foreach(const struct fruity_2d* pfs,
-                FruityRowFunction row_func,
+                F2DRowFunc row_func,
                 void* row_data,
-                FruityColFunction col_func,
+                F2DColFunc col_func,
                 void* col_data)
 {
         char** p = pfs->data;
 
-        for (size_t i = 0; i < pfs->rows; ++i) {
-                for (size_t j = 0; j < pfs->cols; ++j)
+        for (int i = 0; i < pfs->rows; ++i) {
+                for (int j = 0; j < pfs->cols; ++j)
                         if (col_func)
-                                col_func((struct fruity_2d_cell){
-                                        .ptr = &p[i][j*pfs->size],
-                                        .row = i,
-                                        .col = j,
+                                col_func((struct f2d_cell){
+                                        .data = &p[i][j*pfs->size],
+                                        .pt = { .r = i, .c = j },
                                 }, col_data);
                 if (row_func)
                         row_func(row_data, col_data);
@@ -131,20 +130,19 @@ fruity_foreach(const struct fruity_2d* pfs,
 
 void
 fruity_transform(struct fruity_2d* pfs,
-                 FruityRowFunction row_func,
+                 F2DRowFunc row_func,
                  void* row_data,
-                 FruityColFunction col_func,
+                 F2DColFuncMut col_func,
                  void* col_data)
 {
         char** p = pfs->data;
 
-        for (size_t i = 0; i < pfs->rows; ++i) {
-                for (size_t j = 0; j < pfs->cols; ++j)
+        for (int i = 0; i < pfs->rows; ++i) {
+                for (int j = 0; j < pfs->cols; ++j)
                         if (col_func)
-                                col_func((struct fruity_2d_cell){
-                                        .ptr = &p[i][j*pfs->size],
-                                        .row = i,
-                                        .col = j,
+                                col_func((struct f2d_cell_mut){
+                                        .data = &p[i][j*pfs->size],
+                                        .pt = { .r = i, .c = j },
                                 }, col_data);
                 if (row_func)
                         row_func(row_data, col_data);
@@ -153,17 +151,16 @@ fruity_transform(struct fruity_2d* pfs,
 
 int
 fruity_count_if(const struct fruity_2d* pfs,
-                FruityPredicate pred,
+                F2DPredicate pred,
                 void* data)
 {
         int sum = 0;
         char** p = pfs->data;
-        for (size_t i = 0; i < pfs->rows; ++i)
-                for (size_t j = 0; j < pfs->cols; ++j) {
-                        struct fruity_2d_cell cell = {
-                                .ptr = &p[i][j * pfs->size],
-                                .row = i,
-                                .col = j,
+        for (int i = 0; i < pfs->rows; ++i)
+                for (int j = 0; j < pfs->cols; ++j) {
+                        struct f2d_cell cell = {
+                                .data = &p[i][j * pfs->size],
+                                .pt = { .r = i, .c = j },
                         };
                         if (pred(cell, data))
                                 ++sum;
@@ -177,36 +174,32 @@ fruity_count_if(const struct fruity_2d* pfs,
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 int
-fruity_adjacent_4(struct fruity_2d* pfs, size_t r, size_t c,
-                struct fruity_2d_cell adj[4])
+fruity_adjacent_4(const struct fruity_2d* pfs, int r, int c,
+                struct f2d_cell adj[4])
 {
         int count = 0;
-        char** p = pfs->data;
+        const char*const* p = fruity_data(pfs);
         const size_t sz = pfs->size;
 
-        if (r != 0)             // UP
-                adj[count++] = (struct fruity_2d_cell){
-                        .ptr = &p[r - 1][c * sz],
-                        .row = r - 1,
-                        .col = c,
+        if (r != 0)                     // UP
+                adj[count++] = (struct f2d_cell){
+                        .data = &p[r - 1][c * sz],
+                        .pt = { .r = r - 1, .c = c },
                 };
-        if (c + 1 < pfs->cols)  // RIGHT
-                adj[count++] = (struct fruity_2d_cell){
-                        .ptr = &p[r][(c + 1) * sz],
-                        .row = r,
-                        .col = c + 1,
+        if (c + 1 < fruity_rows(pfs))   // RIGHT
+                adj[count++] = (struct f2d_cell){
+                        .data = &p[r][(c + 1) * sz],
+                        .pt = { .r = r, .c = c + 1 },
                 };
-        if (r + 1 < pfs->rows)  // DOWN
-                adj[count++] = (struct fruity_2d_cell){
-                        .ptr = &p[r + 1][c * sz],
-                        .row = r + 1,
-                        .col = c,
+        if (r + 1 < fruity_cols(pfs))   // DOWN
+                adj[count++] = (struct f2d_cell){
+                        .data = &p[r + 1][c * sz],
+                        .pt = { .r = r + 1, .c = c },
                 };
-        if (c != 0)             // LEFT
-                adj[count++] = (struct fruity_2d_cell){
-                        .ptr = &p[r][(c - 1) * sz],
-                        .row = r,
-                        .col = c - 1,
+        if (c != 0)                     // LEFT
+                adj[count++] = (struct f2d_cell){
+                        .data = &p[r][(c - 1) * sz],
+                        .pt = { .r = r, .c = c - 1 },
                 };
 
         return count;

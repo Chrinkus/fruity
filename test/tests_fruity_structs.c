@@ -14,11 +14,12 @@ struct something {              // purposefully not "packed" well
         unsigned flags;
 };
 
-static void fruity_structs_new_test(void** state)
+static void
+fruity_structs_new_test(void** state)
 {
         (void)state;
 
-        Fruity2D fs = { 0 };
+        struct fruity_2d fs = { 0 };
         fruity_new(&fs, 5, 13, sizeof(struct something));
 
         const struct something*const* p = fruity_data(&fs);
@@ -28,11 +29,12 @@ static void fruity_structs_new_test(void** state)
         fruity_free(&fs);
 }
 
-static void fruity_structs_initialize_test(void** state)
+static void
+fruity_structs_initialize_test(void** state)
 {
         (void)state;
 
-        Fruity2D fs = { 0 };
+        struct fruity_2d fs = { 0 };
         fruity_new(&fs, 32, 8, sizeof(struct something));
 
         struct something s = {
@@ -68,20 +70,22 @@ static void fruity_structs_initialize_test(void** state)
         fruity_free(&fs);
 }
 
-static void inc_and_count(Fruity2DCell cell, void* data)
+static void
+inc_and_count(struct f2d_cell_mut cell, void* data)
 {
-        struct something* ps = cell.ptr;
+        struct something* ps = cell.data;
         int* pi = data;
 
         ++(*pi);
         ps->count = *pi;
 }
 
-static void fruity_structs_transform_test(void** state)
+static void
+fruity_structs_transform_test(void** state)
 {
         (void)state;
 
-        Fruity2D fs = { 0 };
+        struct fruity_2d fs = { 0 };
         fruity_new(&fs, 5, 8, sizeof(struct something));
 
         struct something s = { 0 };

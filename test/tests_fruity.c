@@ -17,7 +17,7 @@ fruity_new_test(void** state)
         (void)state;
 
         // Create 2D array
-        Fruity2D ai = { 0 };
+        struct fruity_2d ai = { 0 };
         void* res = fruity_new(&ai, 10, 15, sizeof(int));
         // The array has "something" in it
         assert_non_null(res);
@@ -31,7 +31,7 @@ fruity_new_test(void** state)
         assert_int_equal(ai.cols, 0);
         assert_int_equal(ai.size, 0);
 
-        Fruity2D ad = { 0 };
+        struct fruity_2d ad = { 0 };
         res = fruity_new(&ad, 3, 22, sizeof(double));
         assert_non_null(res);
         assert_int_equal(ad.rows, 3);
@@ -41,7 +41,7 @@ fruity_new_test(void** state)
         assert_int_equal(ad.rows, 0);
         assert_int_equal(ad.cols, 0);
 
-        Fruity2D ac = { 0 };
+        struct fruity_2d ac = { 0 };
         res = fruity_new(&ac, 1000, 1000, sizeof(char));
         assert_non_null(res);
         assert_int_equal(ac.rows, 1000);
@@ -51,7 +51,7 @@ fruity_new_test(void** state)
         assert_int_equal(ac.rows, 0);
         assert_int_equal(ac.cols, 0);
 
-        Fruity2D as = { 0 };
+        struct fruity_2d as = { 0 };
         res = fruity_new(&as, 20, 30, sizeof(struct plot));
         assert_non_null(res);
         assert_int_equal(as.rows, 20);
@@ -63,18 +63,18 @@ fruity_new_test(void** state)
 }
 
 static void
-int_inc(Fruity2DCell cell, void* data)
+int_inc(struct f2d_cell_mut cell, void* data)
 {
-        int* pi = cell.ptr;
+        int* pi = cell.data;
         int* pd = data;
 
         *pi = (*pd)++;
 }
 
 static void
-char_inc(Fruity2DCell cell, void* data)
+char_inc(struct f2d_cell_mut cell, void* data)
 {
-        char* pc = cell.ptr;
+        char* pc = cell.data;
         char* pd = data;
 
         *pc = (*pd)++;
@@ -85,7 +85,7 @@ fruity_transform_test(void** state)
 {
         (void)state;
 
-        Fruity2D fi = { 0 };
+        struct fruity_2d fi = { 0 };
         void* res = fruity_new(&fi, 10, 10, sizeof(int));
         assert_non_null(res);
 
@@ -106,7 +106,7 @@ fruity_transform_test(void** state)
 
         fruity_free(&fi);
 
-        Fruity2D fc = { 0 };
+        struct fruity_2d fc = { 0 };
         res = fruity_new(&fc, 2, 13, sizeof(char));
         assert_non_null(res);
 
@@ -123,18 +123,18 @@ fruity_transform_test(void** state)
 }
 
 void
-accumulate(Fruity2DCell cell, void* data)
+accumulate(struct f2d_cell cell, void* data)
 {
-        const int* ele = cell.ptr;
+        const int* ele = cell.data;
         int* p = data;
 
         *p += *ele;
 }
 
 void
-doubler(Fruity2DCell cell, void* data)
+doubler(struct f2d_cell_mut cell, void* data)
 {
-        int* ele = cell.ptr;
+        int* ele = cell.data;
         (void)data;
 
         *ele *= 2;
@@ -145,7 +145,7 @@ fruity_foreach_test(void** state)
 {
         (void)state;
 
-        Fruity2D fi = { 0 };
+        struct fruity_2d fi = { 0 };
         void* res = fruity_new(&fi, 5, 2, sizeof(int));
         assert_non_null(res);
 
@@ -165,13 +165,13 @@ fruity_copy_test(void** state)
 {
         (void)state;
 
-        Fruity2D f1 = { 0 };
+        struct fruity_2d f1 = { 0 };
         fruity_new(&f1, 6, 9, sizeof(int));
 
         int v = 1;
         fruity_transform(&f1, NULL, NULL, int_inc, &v);
 
-        Fruity2D f2 = { 0 };
+        struct fruity_2d f2 = { 0 };
         void* res = fruity_copy(&f1, &f2);
         assert_non_null(res);
 
@@ -206,7 +206,7 @@ fruity_init_test(void** state)
 {
         (void)state;
 
-        Fruity2D fi = { 0 };
+        struct fruity_2d fi = { 0 };
         void* res = fruity_new(&fi, 4, 10, sizeof(int));
         assert_non_null(res);
 
@@ -222,7 +222,7 @@ fruity_init_test(void** state)
 
         fruity_free(&fi);
 
-        Fruity2D fd = { 0 };
+        struct fruity_2d fd = { 0 };
         fruity_new(&fd, 12, 20, sizeof(double));
         assert_non_null(res);
 
@@ -241,18 +241,18 @@ fruity_init_test(void** state)
 }
 
 int
-is_multiple_of(Fruity2DCell cell, void* data)
+is_multiple_of(struct f2d_cell cell, void* data)
 {
-        const int* pi = cell.ptr;
+        const int* pi = cell.data;
         const int* mul = data;
 
         return *pi != 0 && *pi % *mul == 0;
 }
 
 int
-is_greater_than(Fruity2DCell cell, void* data)
+is_greater_than(struct f2d_cell cell, void* data)
 {
-        const int* pi = cell.ptr;
+        const int* pi = cell.data;
         const int* than = data;
 
         return *pi > *than;
@@ -263,7 +263,7 @@ fruity_count_if_test(void** state)
 {
         (void)state;
 
-        Fruity2D fi = { 0 };
+        struct fruity_2d fi = { 0 };
         void* res = fruity_new(&fi, 10, 10, sizeof(int));
         assert_non_null(res);
 
@@ -293,36 +293,36 @@ fruity_adjacent_4_test(void** state)
 {
         (void)state;
 
-        Fruity2D fi = { 0 };
+        struct fruity_2d fi = { 0 };
         void* res = fruity_new(&fi, 3, 3, sizeof(int));
         assert_non_null(res);
 
         int v = 1;
         fruity_transform(&fi, NULL, NULL, int_inc, &v);
 
-        Fruity2DCell adj[4] = { { 0 } };
+        struct f2d_cell adj[4] = { { 0 } };
         int n = fruity_adjacent_4(&fi, 0, 0, adj);
         assert_int_equal(n, 2);
-        assert_int_equal(*(int*)adj[0].ptr, 2);
-        assert_int_equal(*(int*)adj[1].ptr, 4);
+        assert_int_equal(*(int*)adj[0].data, 2);
+        assert_int_equal(*(int*)adj[1].data, 4);
 
         n = fruity_adjacent_4(&fi, 1, 2, adj);
         assert_int_equal(n, 3);
-        assert_int_equal(*(int*)adj[0].ptr, 3);
-        assert_int_equal(*(int*)adj[1].ptr, 9);
-        assert_int_equal(*(int*)adj[2].ptr, 5);
+        assert_int_equal(*(int*)adj[0].data, 3);
+        assert_int_equal(*(int*)adj[1].data, 9);
+        assert_int_equal(*(int*)adj[2].data, 5);
 
         n = fruity_adjacent_4(&fi, 1, 1, adj);
         assert_int_equal(n, 4);
-        assert_int_equal(*(int*)adj[0].ptr, 2);
-        assert_int_equal(*(int*)adj[1].ptr, 6);
-        assert_int_equal(*(int*)adj[2].ptr, 8);
-        assert_int_equal(*(int*)adj[3].ptr, 4);
+        assert_int_equal(*(int*)adj[0].data, 2);
+        assert_int_equal(*(int*)adj[1].data, 6);
+        assert_int_equal(*(int*)adj[2].data, 8);
+        assert_int_equal(*(int*)adj[3].data, 4);
 
         n = fruity_adjacent_4(&fi, 2, 2, adj);
         assert_int_equal(n, 2);
-        assert_int_equal(*(int*)adj[0].ptr, 6);
-        assert_int_equal(*(int*)adj[1].ptr, 8);
+        assert_int_equal(*(int*)adj[0].data, 6);
+        assert_int_equal(*(int*)adj[1].data, 8);
 
         fruity_free(&fi);
 }

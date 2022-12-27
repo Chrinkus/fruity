@@ -28,8 +28,6 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Fruity Types
- *
- * All structs are typedef'd for ease of use.
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /**
@@ -42,29 +40,52 @@
  * @member cols The number of columns in the 2D structure.
  * @member size The size of the elements of the 2D structure in bytes.
  */
-typedef struct fruity_2d Fruity2D;
 struct fruity_2d {
         char** data;
-        size_t rows;
-        size_t cols;
+        int rows;
+        int cols;
         size_t size;
 };
 
 /**
- * struct fruity_2d_cell
+ * struct f2d_point
  *
- * An cell within a 2D structure. Contains both a pointer to the element
- * and the row and column of the element.
+ * A set of coordinates to a location within a 2D array.
  *
- * @member ptr  A pointer to the element.
- * @member row  The row of the element.
- * @member col  The column of the element.
+ * @member r    The row.
+ * @member c    The column.
  */
-typedef struct fruity_2d_cell Fruity2DCell;
-struct fruity_2d_cell {
-        void* ptr;
-        size_t row;
-        size_t col;
+struct f2d_point {
+        int r;
+        int c;
+};
+
+/**
+ * struct f2d_cell
+ *
+ * A cell within a 2D structure. Contains both a read-only pointer to the
+ * element and a point containing the row and column location of the element.
+ *
+ * @member data A read-only pointer to the element.
+ * @member pt   The location of the element.
+ */
+struct f2d_cell {
+        const void* data;
+        struct f2d_point pt;
+};
+
+/**
+ * struct f2d_cell_mut
+ *
+ * A cell within a 2D structure. Contains both a mutable pointer to the 
+ * element and a point containing the row and column location of the element.
+ *
+ * @member data A mutable pointer to the element.
+ * @member pt   The location of the element.
+ */
+struct f2d_cell_mut {
+        void* data;
+        struct f2d_point pt;
 };
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -72,41 +93,62 @@ struct fruity_2d_cell {
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 /**
- * FruityRowFunction
+ * F2DRowFunc
  *
  * The signature of a function to be passed to 'foreach' and 'transform' that
  * will be called at the end of processing every row.
  *
+ * - foreach
+ * - transform
+ *
  * @param row_data      A pointer to the user data passed for row processing.
  * @param col_data      A pointer to the user data passed for column processing.
  */
-typedef void (*FruityRowFunction)(void* row_data, void* col_data);
+typedef void (*F2DRowFunc)(void* row_data, void* col_data);
 
 /**
- * FruityColFunction
+ * F2DColFunc
  *
- * The signature of a function to be passed to 'foreach' and 'transform' that
- * will be called for each element in the 2D array.
+ * The signature of a function to be passed to fruity functions that only
+ * require read-access to the elements of the 2D array.
  *
- * @param cell          A fruity_2d_cell containing a pointer to the current
- *                      element as well as the element's row and column.
- * @param col_data      A pointer to the user data passed for column processing.
+ * - foreach
+ *
+ * @param cell  An f2d_cell containing a pointer to the current element as
+ *              well as the element's location.
+ * @param data  A pointer to the user data passed for column processing.
  */
-typedef void (*FruityColFunction)(Fruity2DCell cell, void* col_data);
+typedef void (*F2DColFunc)(struct f2d_cell cell, void* data);
 
 /**
- * FruityPredicate
+ * F2DColFuncMut
  *
- * The signature of a function to be passed to 'count_if' that will be called
- * for each element in the 2D array.
+ * The signature of a function to be passed to fruity functions that intend
+ * to mutate the elements of the 2D array.
  *
- * @param cell  A fruity_2d_cell containing a pointer to the current element
- *              as well as the element's row and column.
+ * - transform
+ *
+ * @param cell  An f2d_cell_mut containing a pointer to the current element
+ *              as well as the element's location.
+ * @param data  A pointer to the user data passed for column processing.
+ */
+typedef void (*F2DColFuncMut)(struct f2d_cell_mut cell, void* data);
+
+/**
+ * F2DPredicate
+ *
+ * The signature of a function to be passed to fruity functions that evaluate
+ * a boolean condition on the elements of a 2D array.
+ *
+ * - count_if
+ *
+ * @param cell  An f2d_cell containing a pointer to the current element as well
+ *              as the element's location.
  * @param data  A pointer to optional userdata.
  *
  * @return      An integer boolean value.
  */
-typedef int (*FruityPredicate)(Fruity2DCell cell, void* data);
+typedef int (*F2DPredicate)(struct f2d_cell cell, void* data);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Fruity Management Functions
@@ -126,7 +168,7 @@ typedef int (*FruityPredicate)(Fruity2DCell cell, void* data);
  * @return      A pointer to the allocated data on success, NULL on failure.
  */
 void*
-fruity_new(struct fruity_2d* pfs, size_t rows, size_t cols, size_t size);
+fruity_new(struct fruity_2d* pfs, int rows, int cols, size_t size);
 
 /**
  * fruity_copy
@@ -137,7 +179,7 @@ fruity_new(struct fruity_2d* pfs, size_t rows, size_t cols, size_t size);
  * @param src   The source 2D array. (Read-only)
  * @param dst   The destination 2D array object.
  *
- * @return      A pointer to the allocated data on success, NULL on failure.
+ * @return      A pointer to 'dst' on success, NULL on failure.
  */
 void*
 fruity_copy(const struct fruity_2d* src, struct fruity_2d* dst);
@@ -147,11 +189,11 @@ fruity_copy(const struct fruity_2d* src, struct fruity_2d* dst);
  *
  * De-allocate the memory previously allocated by a call to `fruity_new`.
  *
- * @param pfs   A pointer to a fruity_2d struct. Passed as 'void*' to mirror
+ * @param p     A pointer to a fruity_2d struct. Passed as 'void*' to mirror
  *              standard library 'free'.
  */
 void
-fruity_free(void* pfs);
+fruity_free(void* p);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Fruity Inline Getters
@@ -166,7 +208,7 @@ fruity_free(void* pfs);
  *
  * @return      The number of rows in the struct.
  */
-inline size_t
+inline int
 fruity_rows(const struct fruity_2d* pfs)
 {
         return pfs->rows;
@@ -181,7 +223,7 @@ fruity_rows(const struct fruity_2d* pfs)
  *
  * @return      The number of columns in the struct.
  */
-inline size_t
+inline int
 fruity_cols(const struct fruity_2d* pfs)
 {
         return pfs->cols;
@@ -241,7 +283,7 @@ fruity_data_mut(struct fruity_2d* pfs)
  * @return      A read-only pointer to the cell.
  */
 inline const void*
-fruity_get(const struct fruity_2d* pfs, size_t row, size_t col)
+fruity_get(const struct fruity_2d* pfs, int row, int col)
 {
         return &((char**)pfs->data)[row][col * pfs->size];
 }
@@ -258,7 +300,7 @@ fruity_get(const struct fruity_2d* pfs, size_t row, size_t col)
  * @return      A mutable pointer to the cell.
  */
 inline void*
-fruity_get_mut(struct fruity_2d* pfs, size_t row, size_t col)
+fruity_get_mut(struct fruity_2d* pfs, int row, int col)
 {
         return &((char**)pfs->data)[row][col * pfs->size];
 }
@@ -291,9 +333,9 @@ fruity_init(struct fruity_2d* pfs, const void* value);
  */
 void
 fruity_foreach(const struct fruity_2d* pfs, 
-                FruityRowFunction row_func,
+                F2DRowFunc row_func,
                 void* row_data,
-                FruityColFunction col_func,
+                F2DColFunc col_func,
                 void* col_data);
 
 /**
@@ -310,9 +352,9 @@ fruity_foreach(const struct fruity_2d* pfs,
  */
 void
 fruity_transform(struct fruity_2d* pfs,
-                 FruityRowFunction row_func,
+                 F2DRowFunc row_func,
                  void* row_data,
-                 FruityColFunction col_func,
+                 F2DColFuncMut col_func,
                  void* col_data);
 
 /**
@@ -331,7 +373,7 @@ fruity_transform(struct fruity_2d* pfs,
  */
 int
 fruity_count_if(const struct fruity_2d* pfs,
-                FruityPredicate pred,
+                F2DPredicate pred,
                 void* data);
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -357,6 +399,6 @@ fruity_count_if(const struct fruity_2d* pfs,
  * @return      The number of adjacent elements found.
  */
 int
-fruity_adjacent_4(struct fruity_2d* pfs, size_t r, size_t c,
-                struct fruity_2d_cell adj[4]);
+fruity_adjacent_4(const struct fruity_2d* pfs, int r, int c,
+                struct f2d_cell adj[4]);
 
