@@ -171,6 +171,25 @@ void*
 fruity_new(struct fruity_2d* pfs, int rows, int cols, size_t size);
 
 /**
+ * fruity_build
+ *
+ * Allocate a 2D array of the given dimensions for elements of the given size.
+ * If an initial value is provided, set all elements to equal it.
+ *
+ * @param pfs   The fruity_2d struct.
+ * @param rows  The number of rows.
+ * @param cols  The number of columns.
+ * @param init  A pointer to the desired initial data. May be NULL.
+ * @param size  The size of the elements.
+ *
+ * @return      A pointer to the fruity_2d struct on success, NULL on
+ *              failure.
+ */
+void*
+fruity_build(struct fruity_2d* pfs, int rows, int cols, const void* init,
+                size_t size);
+
+/**
  * fruity_copy
  *
  * Allocate a new 2D array with the dimensions of another. Fill the new

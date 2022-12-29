@@ -63,6 +63,30 @@ fruity_new_test(void** state)
 }
 
 static void
+build_test(void** state)
+{
+        (void)state;
+
+        struct fruity_2d f1 = { 0 };
+        int x1 = 5;
+        assert_non_null(fruity_build(&f1, 7, 13, &x1, sizeof(x1)));
+
+        // No getters, just member access
+        assert_int_equal(f1.rows, 7);
+        assert_int_equal(f1.cols, 13);
+        assert_int_equal(f1.size, sizeof(int));
+        assert_non_null(f1.data);
+
+        const int*const* p1 = (const int*const*)(f1.data);
+        assert_int_equal(p1[0][0], 5);
+        assert_int_equal(p1[1][0], 5);
+        assert_int_equal(p1[6][11], 5);
+        assert_int_equal(p1[6][12], 5);
+
+        fruity_free(&f1);
+}
+
+static void
 int_inc(struct f2d_cell_mut cell, void* data)
 {
         int* pi = cell.data;
@@ -331,6 +355,7 @@ int main(void)
 {
         const struct CMUnitTest tests[] = {
                 cmocka_unit_test(fruity_new_test),
+                cmocka_unit_test(build_test),
                 cmocka_unit_test(fruity_transform_test),
                 cmocka_unit_test(fruity_foreach_test),
                 cmocka_unit_test(fruity_copy_test),

@@ -49,6 +49,36 @@ fruity_new(struct fruity_2d* pfs, int rows, int cols, size_t size)
 }
 
 void*
+fruity_build(struct fruity_2d* pfs, int rows, int cols, const void* init,
+                size_t size)
+{
+        if (rows <= 0 || cols <= 0)
+                return NULL;
+
+        char** pp = malloc(rows * sizeof(char*) + rows * cols * size);
+        if (!pp)
+                return NULL;
+
+        // Set pointer array to start of each row
+        char* arr = (char*)(pp + rows);
+        for (int i = 0; i < rows; ++i)
+                pp[i] = (arr + i * cols * size);
+
+        // Set initial value of elements if given
+        if (init)
+                for (int i = 0; i < rows; ++i)
+                        for (int j = 0; j < cols; ++j)
+                                memcpy(&pp[i][j * size], init, size);
+
+        // Set members
+        pfs->data = pp;
+        pfs->rows = rows;
+        pfs->cols = cols;
+        pfs->size = size;
+        return pfs;
+}
+
+void*
 fruity_copy(const struct fruity_2d* src, struct fruity_2d* dst)
 {
         if (!fruity_new(dst, src->rows, src->cols, src->size))
