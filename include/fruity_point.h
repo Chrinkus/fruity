@@ -24,6 +24,8 @@
  */
 #pragma once
 
+#include <stddef.h>
+
 /**
  * struct f2d_point
  *
@@ -89,3 +91,10 @@ f2d_point_col(const struct f2d_point* pt)
  */
 int
 f2d_point_cmp(const void* a, const void* b);
+
+/**
+ * f2d_point_hash
+ *
+ */
+size_t
+f2d_point_hash(struct f2d_point pt, size_t buckets);

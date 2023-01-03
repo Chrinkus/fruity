@@ -24,6 +24,10 @@
  */
 #include "fruity_point.h"
 
+enum {
+        F2D_POINT_HASH_MAGIC = 0x1A51,
+};
+
 int
 f2d_point_cmp(const void* a, const void* b)
 {
@@ -45,6 +49,14 @@ f2d_point_cmp(const void* a, const void* b)
                 return 1;
         // points are equal
         return 0;
+}
+
+size_t
+f2d_point_hash(struct f2d_point pt, size_t buckets)
+{
+        size_t xx = (size_t)pt.x;
+        size_t yy = (size_t)pt.y;
+        return (xx + yy * F2D_POINT_HASH_MAGIC) % buckets;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
