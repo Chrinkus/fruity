@@ -18,3 +18,27 @@
 ## Infinite 2D Planes
 
 Use a hash set of points or a hash map with point keys and generic values.
+
+## Library Naming Considerations
+
+With the addition of infinite structures, the library is growing too big to prefix everything with `fruity`. Even without extra structs, the future consideration of what to do with 3D data sets suggests `fruity_2d` and `fruity_3d`.
+
+The solution is to shorten the prefix to `f2d` and `f3d`.
+
+Now that we have extra structures we need to explicitly name the default 2D bound grid. So how about `f2d_grid`? Does that expand in 3D, does `f3d_grid` make sense? Hopefully.
+
+```
+struct f2d_grid;
+struct f3d_grid;
+
+struct f2d_set;
+struct f2d_table;
+
+struct f2d_point;
+struct f3d_point;
+```
+
+That all looks pretty good and consistent!
+
+Speaking of points, they will need to get the full header/source/test treatment.
+

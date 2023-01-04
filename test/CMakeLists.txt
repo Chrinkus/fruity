@@ -9,6 +9,7 @@ set(test_sources
         "tests_fruity_structs.c"
         "tests_fruity_io.c"
         "tests_point.c"
+        "tests_set.c"
 )
 
 string(LENGTH "tests_" test_prefix_len)
