@@ -80,11 +80,30 @@ hash_2d_test(void** state)
         assert_true(hash < 31);
 }
 
+static void
+move_2d_test(void** state)
+{
+        (void)state;
+
+        struct f2d_point pt = { 0 };
+        assert_int_equal(pt.x, 0);
+        assert_int_equal(pt.y, 0);
+
+        f2d_point_move(&pt, 1, -2);
+        assert_int_equal(pt.x, 1);
+        assert_int_equal(pt.y, -2);
+
+        f2d_point_move(&pt, -5, 8);
+        assert_int_equal(pt.x, -4);
+        assert_int_equal(pt.y, 6);
+}
+
 int main(void)
 {
         const struct CMUnitTest tests[] = {
                 cmocka_unit_test(cmp_2d_test),
                 cmocka_unit_test(hash_2d_test),
+                cmocka_unit_test(move_2d_test),
         };
 
         return cmocka_run_group_tests(tests, NULL, NULL);

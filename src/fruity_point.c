@@ -68,3 +68,6 @@ f2d_point_row(const struct f2d_point* pt);
 
 int
 f2d_point_col(const struct f2d_point* pt);
+
+void
+f2d_point_move(struct f2d_point* pt, int dx, int dy);

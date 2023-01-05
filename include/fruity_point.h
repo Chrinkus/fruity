@@ -78,6 +78,22 @@ f2d_point_col(const struct f2d_point* pt)
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
 
 /**
+ * f2d_point_move
+ *
+ * Move a given point according using deltas for each dimension.
+ *
+ * @param pt    The point to move.
+ * @param dx    The change to x.
+ * @param dy    The change to y.
+ */
+inline void
+f2d_point_move(struct f2d_point* pt, int dx, int dy)
+{
+        pt->x += dx;
+        pt->y += dy;
+}
+
+/**
  * f2d_point_cmp
  *
  * Perform a three-way comparison between two points. Top left < bottom right.
@@ -95,6 +111,13 @@ f2d_point_cmp(const void* a, const void* b);
 /**
  * f2d_point_hash
  *
+ * Calculate a hash value for a point that fits into a given sized set of
+ * buckets.
+ *
+ * @param pt            A point.
+ * @param buckets       The number of buckets in the table.
+ *
+ * @return              An unsigned value in the range of [0:buckets).
  */
 size_t
 f2d_point_hash(struct f2d_point pt, size_t buckets);
