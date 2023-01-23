@@ -65,10 +65,13 @@ fruity_build(struct fruity_2d* pfs, int rows, int cols, const void* init,
                 pp[i] = (arr + i * cols * size);
 
         // Set initial value of elements if given
-        if (init)
+        if (init) {
                 for (int i = 0; i < rows; ++i)
                         for (int j = 0; j < cols; ++j)
                                 memcpy(&pp[i][j * size], init, size);
+        } else {
+                memset(&pp[0][0], 0, rows * cols * size);
+        }
 
         // Set members
         pfs->data = pp;
@@ -89,6 +92,43 @@ fruity_copy(const struct fruity_2d* src, struct fruity_2d* dst)
 
         memcpy(pdst, psrc, src->size * src->rows * src->cols);
         return dst;
+}
+
+void
+fruity_move(struct fruity_2d* src, struct fruity_2d* dst)
+{
+        fruity_free(dst);
+        dst->data = src->data;
+        dst->rows = src->rows;
+        dst->cols = src->cols;
+        dst->size = src->size;
+
+        memset(src, 0, sizeof(*src));
+}
+
+void*
+fruity_grow(struct fruity_2d* pfs, int nrows, int ncols,
+                unsigned srows, unsigned scols, void* init)
+{
+        if (nrows == 0 && ncols == 0)
+                return pfs;     // nothing to do
+        if (srows > nrows || scols > ncols)
+                return NULL;    // error: shift larger than added dimension
+
+        struct fruity_2d tmp = { 0 };
+        if (!fruity_build(&tmp, pfs->rows + nrows, pfs->cols + ncols, init,
+                                pfs->size))
+                return NULL;
+
+        for (int i = 0; i < fruity_rows(pfs); ++i)
+                for (int j = 0; j < fruity_cols(pfs); ++j) {
+                        void* dst = fruity_get_mut(&tmp, i + srows, j + scols);
+                        const void* src = fruity_get(pfs, i, j);
+                        memcpy(dst, src, pfs->size);
+                }
+
+        fruity_move(&tmp, pfs);
+        return pfs;
 }
 
 void

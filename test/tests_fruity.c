@@ -84,6 +84,17 @@ build_test(void** state)
         assert_int_equal(p1[6][12], 5);
 
         fruity_free(&f1);
+
+        struct fruity_2d f2 = { 0 };
+        assert_non_null(fruity_build(&f2, 5, 14, NULL, sizeof(int)));
+
+        const int* const* p2 = fruity_data(&f2);
+        assert_int_equal(p2[0][0], 0);
+        assert_int_equal(p2[0][13], 0);
+        assert_int_equal(p2[3][0], 0);
+        assert_int_equal(p2[4][13], 0);
+
+        fruity_free(&f2);
 }
 
 static void

@@ -203,6 +203,13 @@ fruity_build(struct fruity_2d* pfs, int rows, int cols, const void* init,
 void*
 fruity_copy(const struct fruity_2d* src, struct fruity_2d* dst);
 
+void
+fruity_move(struct fruity_2d* src, struct fruity_2d* dst);
+
+void*
+fruity_grow(struct fruity_2d* pfs, int nrows, int ncols, int srows, int scols,
+                void* init);
+
 /**
  * fruity_free
  *
