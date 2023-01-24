@@ -112,7 +112,9 @@ fruity_grow(struct fruity_2d* pfs, int nrows, int ncols,
 {
         if (nrows == 0 && ncols == 0)
                 return pfs;     // nothing to do
-        if (srows > nrows || scols > ncols)
+        if (nrows < 0 || ncols < 0)
+                return NULL;    // error: not a shrinking function
+        if (srows > (unsigned)nrows || scols > (unsigned)ncols)
                 return NULL;    // error: shift larger than added dimension
 
         struct fruity_2d tmp = { 0 };

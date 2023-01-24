@@ -203,12 +203,38 @@ fruity_build(struct fruity_2d* pfs, int rows, int cols, const void* init,
 void*
 fruity_copy(const struct fruity_2d* src, struct fruity_2d* dst);
 
+/**
+ * fruity_move
+ *
+ * Moves the contents of 'src' to 'dst', setting members of 'src' to zero.
+ * Performs a free on 'dst' before moving.
+ *
+ * @param src   The 2D array to move.
+ * @param dst   The 2D array to move 'src' to.
+ */
 void
 fruity_move(struct fruity_2d* src, struct fruity_2d* dst);
 
+/**
+ * fruity_grow
+ *
+ * Extend the size of the 2D array by a given number of rows and/or columns.
+ * Optionally shift the original contents by a given number of rows and/or
+ * columns as long as the shifts are not greater than the extended dimensions.
+ *
+ * @param pfs   The 2D array to grow.
+ * @param nrows The number of rows to add.
+ * @param ncols The number of columns to add.
+ * @param srows The number of rows to shift.
+ * @param scols The number of columns to shift.
+ * @param init  Optional. A pointer to a desired initial value for the newly
+ *              added elements or NULL for zero-initialization.
+ *
+ * @return      A pointer to the 2D array struct on success or NULL on error.
+ */
 void*
-fruity_grow(struct fruity_2d* pfs, int nrows, int ncols, int srows, int scols,
-                void* init);
+fruity_grow(struct fruity_2d* pfs, int nrows, int ncols,
+                unsigned srows, unsigned scols, void* init);
 
 /**
  * fruity_free

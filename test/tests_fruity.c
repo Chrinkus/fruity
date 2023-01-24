@@ -362,6 +362,90 @@ fruity_adjacent_4_test(void** state)
         fruity_free(&fi);
 }
 
+static void
+move_test(void** state)
+{
+        (void)state;
+
+        struct fruity_2d f1 = { 0 };
+        int x = 37;
+        fruity_build(&f1, 4, 2, &x, sizeof(x));
+
+        assert_non_null(f1.data);
+        assert_int_equal(f1.rows, 4);
+        assert_int_equal(f1.cols, 2);
+
+        const int* const* aai = fruity_data(&f1);
+        assert_int_equal(aai[0][0], 37);
+        assert_int_equal(aai[0][1], 37);
+        assert_int_equal(aai[2][0], 37);
+        assert_int_equal(aai[3][1], 37);
+
+        struct fruity_2d f2 = { 0 };
+        fruity_build(&f2, 23, 10, NULL, sizeof(int));
+
+        assert_non_null(f2.data);
+        assert_int_equal(f2.rows, 23);
+        assert_int_equal(f2.cols, 10);
+
+        aai = fruity_data(&f2);
+        assert_int_equal(aai[0][0], 0);
+        assert_int_equal(aai[0][1], 0);
+        assert_int_equal(aai[2][0], 0);
+        assert_int_equal(aai[3][1], 0);
+
+        fruity_move(&f1, &f2);
+        assert_null(f1.data);
+        assert_int_equal(f1.rows, 0);
+        assert_int_equal(f1.cols, 0);
+
+        assert_non_null(f2.data);
+        assert_int_equal(f2.rows, 4);
+        assert_int_equal(f2.cols, 2);
+
+        aai = fruity_data(&f2);
+        assert_int_equal(aai[0][0], 37);
+        assert_int_equal(aai[0][1], 37);
+        assert_int_equal(aai[2][0], 37);
+        assert_int_equal(aai[3][1], 37);
+
+        fruity_free(&f2);
+}
+
+static void
+grow_test(void** state)
+{
+        (void)state;
+
+        struct fruity_2d f1 = { 0 };
+        fruity_new(&f1, 3, 3, sizeof(int));
+        int v1 = 1;
+        fruity_transform(&f1, NULL, NULL, int_inc, &v1);
+
+        const int* const* aai = fruity_data(&f1);
+        assert_int_equal(aai[0][0], 1);
+        assert_int_equal(aai[1][1], 5);
+        assert_int_equal(aai[2][0], 7);
+        assert_int_equal(aai[2][2], 9);
+
+        assert_null(fruity_grow(&f1, -1, 5, 0, 0, NULL));       // negative dim
+        assert_null(fruity_grow(&f1, 2, 1, 0, 5, NULL));        // big shift
+
+        assert_non_null(fruity_grow(&f1, 2, 2, 1, 1, NULL));    // grow & shift!
+        assert_int_equal(f1.rows, 5);
+        assert_int_equal(f1.cols, 5);
+
+        aai = fruity_data(&f1);
+        assert_int_equal(aai[0][0], 0);
+        assert_int_equal(aai[1][1], 1);
+        assert_int_equal(aai[2][2], 5);
+        assert_int_equal(aai[3][1], 7);
+        assert_int_equal(aai[3][3], 9);
+        assert_int_equal(aai[4][4], 0);
+
+        fruity_free(&f1);
+}
+
 int main(void)
 {
         const struct CMUnitTest tests[] = {
@@ -373,6 +457,8 @@ int main(void)
                 cmocka_unit_test(fruity_init_test),
                 cmocka_unit_test(fruity_count_if_test),
                 cmocka_unit_test(fruity_adjacent_4_test),
+                cmocka_unit_test(move_test),
+                cmocka_unit_test(grow_test),
         };
 
         return cmocka_run_group_tests(tests, NULL, NULL);
