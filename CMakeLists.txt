@@ -46,5 +46,7 @@ set(LIB_NAME "fruity")
 
 add_subdirectory(src)
 
-enable_testing()
-add_subdirectory(test)
+if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+        enable_testing()
+        add_subdirectory(test)
+endif()

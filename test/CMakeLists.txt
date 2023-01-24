@@ -1,6 +1,9 @@
-include_directories("${PROJECT_SOURCE_DIR}/src")
-
-find_package(cmocka REQUIRED)
+include(FetchContent)
+FetchContent_Declare(cmocka
+        GIT_REPOSITORY  https://gitlab.com/Chrinkus/cmocka.git
+        GIT_TAG         origin/cmake
+)
+FetchContent_MakeAvailable(cmocka)
 
 add_custom_target(tests_fruity)
 
@@ -24,4 +27,3 @@ foreach(file IN LISTS test_sources)
 	add_test(NAME "${func}" COMMAND "${bin_name}")
 	add_dependencies(tests_fruity "${bin_name}")
 endforeach()
-
