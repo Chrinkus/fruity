@@ -25,6 +25,7 @@
 #pragma once
 
 #include <stddef.h>
+#include "fruity_point.h"
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Fruity Types
@@ -45,19 +46,6 @@ struct fruity_2d {
         int rows;
         int cols;
         size_t size;
-};
-
-/**
- * struct f2d_point
- *
- * A set of coordinates to a location within a 2D array.
- *
- * @member r    The row.
- * @member c    The column.
- */
-struct f2d_point {
-        int r;
-        int c;
 };
 
 /**
