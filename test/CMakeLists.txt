@@ -11,6 +11,7 @@ set(test_sources
 	"tests_fruity.c"
         "tests_fruity_structs.c"
         "tests_fruity_io.c"
+        "tests_fruity_io_read.c"
         "tests_point.c"
         "tests_set.c"
 )
@@ -26,4 +27,25 @@ foreach(file IN LISTS test_sources)
 	target_link_libraries("${bin_name}" PRIVATE "${LIB_NAME}" cmocka)
 	add_test(NAME "${func}" COMMAND "${bin_name}")
 	add_dependencies(tests_fruity "${bin_name}")
+endforeach()
+
+# Create links to data files in necessary directories
+# - CMAKE_CURRENT_BINARY_DIR for CTest
+# - PROJECT_BINARY_DIR for running individual tests
+set(data_files
+        "io_good_chars.txt"
+        "io_good_line.txt"
+        "io_bad_chars.txt"
+)
+foreach(file IN LISTS data_files)
+        file(CREATE_LINK
+                "${PROJECT_SOURCE_DIR}/data/${file}"
+                "${CMAKE_CURRENT_BINARY_DIR}/${file}"
+                SYMBOLIC
+        )
+        file(CREATE_LINK
+                "${PROJECT_SOURCE_DIR}/data/${file}"
+                "${PROJECT_BINARY_DIR}/${file}"
+                SYMBOLIC
+        )
 endforeach()

@@ -5,6 +5,14 @@ project(Fruity2D VERSION 0.3.0 LANGUAGES C)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED YES)
 
+# Support Library
+include(FetchContent)
+FetchContent_Declare(cgs
+        GIT_REPOSITORY  https://github.com/Chrinkus/libcgs.git
+        GIT_TAG         origin/main
+)
+FetchContent_MakeAvailable(cgs)
+
 # Define the 'Profile' build-type and set default to 'Release' for
 # non-multi-config generators
 get_property(isMultiConfig GLOBAL

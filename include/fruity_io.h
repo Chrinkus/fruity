@@ -25,6 +25,7 @@
 #pragma once
 
 #include "fruity.h"
+#include <stdio.h>
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Global Variables
@@ -85,3 +86,17 @@ fruity_io_print_char(struct f2d_cell cell, void* data);
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Fruity Reading
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
+
+/**
+ * fruity_io_read_chars
+ *
+ * Build a 2D character map from the contents of a file. All lines in file
+ * must be the same length to ensure proper representation of map.
+ *
+ * @param f2d   A pointer of the fruity object to build into.
+ * @param file  A pointer to the file to read from.
+ *
+ * @return      The f2d pointer on success, NULL on failure.
+ */
+void*
+fruity_io_read_chars(struct fruity_2d* f2d, FILE* file);

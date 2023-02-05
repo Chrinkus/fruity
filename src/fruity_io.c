@@ -26,6 +26,8 @@
 #include "fruity.h"
 #include <stdio.h>
 
+#include "cgs.h"
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
  * Global Variables
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
@@ -69,3 +71,44 @@ fruity_io_print_char(struct f2d_cell cell, void* data)
 	printf("%c%c", *p, fruity_io_delimiter);
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+ * Reading Functions
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */ 
+
+static int
+test_all_lengths_equal(const struct cgs_vector* lines)
+{
+        if (cgs_vector_length(lines) < 1)
+                return 1;
+        const struct cgs_string* s = cgs_vector_get(lines, 0);
+
+        size_t len = cgs_string_length(s);
+        for (size_t i = 1; i < cgs_vector_length(lines); ++i)
+                if (len != cgs_string_length(cgs_vector_get(lines, i)))
+                        return 0;
+        return 1;
+}
+
+void*
+fruity_io_read_chars(struct fruity_2d* f2d, FILE* file)
+{
+        struct cgs_vector lines = cgs_vector_new(sizeof(struct cgs_string));
+        if (!cgs_io_readlines(file, &lines) || !test_all_lengths_equal(&lines))
+                return NULL;
+
+        const int rows = (int)cgs_vector_length(&lines);
+        const int cols = (int)cgs_string_length(cgs_vector_get(&lines, 0));
+
+        if (!fruity_build(f2d, rows, cols, NULL, sizeof(char)))
+                return NULL;
+
+        char** aac = fruity_data_mut(f2d);
+        for (int i = 0; i < rows; ++i) {
+                const char* s = cgs_string_data(cgs_vector_get(&lines, i));
+                for (int j = 0; j < cols; ++j)
+                        aac[i][j] = s[j];
+        }
+
+        cgs_vector_free_all_with(&lines, cgs_string_free);
+        return f2d;
+}
