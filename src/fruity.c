@@ -276,3 +276,69 @@ fruity_adjacent_4(const struct fruity_2d* pfs, int r, int c,
 
         return count;
 }
+
+int
+fruity_adjacent_8(const struct fruity_2d* pfs, int r, int c,
+                struct f2d_cell* adj)
+{
+        int count = 0;
+        const char*const* p = fruity_data(pfs);
+        const size_t sz = pfs->size;
+
+        const int up = r != 0;
+        const int down = r + 1 < fruity_rows(pfs);
+        const int left = c != 0;
+        const int right = c + 1 < fruity_cols(pfs);
+
+        if (up) {
+                if (left)
+                        adj[count++] = (struct f2d_cell){       // TOP LEFT
+                                .data = &p[r - 1][(c - 1) * sz],
+                                .pt = { .y = r - 1, .x = c - 1 },
+                        };
+
+                adj[count++] = (struct f2d_cell){               // TOP MID
+                        .data = &p[r - 1][c * sz],
+                        .pt = { .y = r - 1, .x = c },
+                };
+
+                if (right)
+                        adj[count++] = (struct f2d_cell){       // TOP RIGHT
+                                .data = &p[r - 1][(c + 1) * sz],
+                                .pt = { .y = r - 1, .x = c + 1 },
+                        };
+        }
+
+        if (left)
+                adj[count++] = (struct f2d_cell){               // MID LEFT
+                        .data = &p[r][(c - 1) * sz],
+                        .pt = { .y = r, .x = c - 1 },
+                };
+
+        if (right)
+                adj[count++] = (struct f2d_cell){               // MID RIGHT
+                        .data = &p[r][(c + 1) * sz],
+                        .pt = { .y = r, .x = c + 1 },
+                };
+
+        if (down) {
+                if (left)
+                        adj[count++] = (struct f2d_cell){       // BOT LEFT
+                                .data = &p[r + 1][(c - 1) * sz],
+                                .pt = { .y = r + 1, .x = c - 1 },
+                        };
+
+                adj[count++] = (struct f2d_cell){               // BOT MID
+                        .data = &p[r + 1][c * sz],
+                        .pt = { .y = r + 1, .x = c },
+                };
+
+                if (right)
+                        adj[count++] = (struct f2d_cell){       // BOT RIGHT
+                                .data = &p[r + 1][(c + 1) * sz],
+                                .pt = { .y = r + 1, .x = c + 1 },
+                        };
+        }
+
+        return count;
+}

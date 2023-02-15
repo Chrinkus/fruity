@@ -442,3 +442,6 @@ int
 fruity_adjacent_4(const struct fruity_2d* pfs, int r, int c,
                 struct f2d_cell adj[4]);
 
+int
+fruity_adjacent_8(const struct fruity_2d* pfs, int r, int c,
+                struct f2d_cell* adj);

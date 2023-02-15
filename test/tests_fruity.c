@@ -384,6 +384,56 @@ adjacent_4_rect_test(void** state)
         fruity_free(&f1);
 }
 
+static void
+adjacent_8_test(void** state)
+        // [a] [b] [c] [d] [e] [f]
+        // [g] [h] [i] [j] [k] [l]
+        // [m] [n] [o] [p] [q] [r]
+        // [s] [t] [u] [v] [w] [x]
+{
+        (void)state;
+        struct fruity_2d f1 = { 0 };
+        fruity_new(&f1, 4, 6, sizeof(char));
+
+        char c1 = 'a';
+        fruity_transform(&f1, NULL, NULL, char_inc, &c1);
+
+        struct f2d_cell adj[8];
+        int n = 0;
+
+        n = fruity_adjacent_8(&f1, 0, 0, adj);
+        assert_int_equal(n, 3);
+        assert_int_equal(*(char*)adj[0].data, 'b');
+        assert_int_equal(*(char*)adj[1].data, 'g');
+        assert_int_equal(*(char*)adj[2].data, 'h');
+
+        n = fruity_adjacent_8(&f1, 1, 1, adj);
+        assert_int_equal(n, 8);
+        assert_int_equal(*(char*)adj[0].data, 'a');
+        assert_int_equal(*(char*)adj[1].data, 'b');
+        assert_int_equal(*(char*)adj[2].data, 'c');
+        assert_int_equal(*(char*)adj[3].data, 'g');
+        assert_int_equal(*(char*)adj[4].data, 'i');
+        assert_int_equal(*(char*)adj[5].data, 'm');
+        assert_int_equal(*(char*)adj[6].data, 'n');
+        assert_int_equal(*(char*)adj[7].data, 'o');
+
+        n = fruity_adjacent_8(&f1, 1, 5, adj);
+        assert_int_equal(n, 5);
+        assert_int_equal(*(char*)adj[0].data, 'e');
+        assert_int_equal(*(char*)adj[1].data, 'f');
+        assert_int_equal(*(char*)adj[2].data, 'k');
+        assert_int_equal(*(char*)adj[3].data, 'q');
+        assert_int_equal(*(char*)adj[4].data, 'r');
+
+        n = fruity_adjacent_8(&f1, 3, 5, adj);
+        assert_int_equal(n, 3);
+
+        n = fruity_adjacent_8(&f1, 3, 2, adj);
+        assert_int_equal(n, 5);
+
+        fruity_free(&f1);
+}
 
 static void
 move_test(void** state)
@@ -481,10 +531,10 @@ int main(void)
                 cmocka_unit_test(fruity_count_if_test),
                 cmocka_unit_test(fruity_adjacent_4_test),
                 cmocka_unit_test(adjacent_4_rect_test),
+                cmocka_unit_test(adjacent_8_test),
                 cmocka_unit_test(move_test),
                 cmocka_unit_test(grow_test),
         };
 
         return cmocka_run_group_tests(tests, NULL, NULL);
 }
-
