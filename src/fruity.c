@@ -258,12 +258,12 @@ fruity_adjacent_4(const struct fruity_2d* pfs, int r, int c,
                         .data = &p[r - 1][c * sz],
                         .pt = { .y = r - 1, .x = c },
                 };
-        if (c + 1 < fruity_rows(pfs))   // RIGHT
+        if (c + 1 < fruity_cols(pfs))   // RIGHT
                 adj[count++] = (struct f2d_cell){
                         .data = &p[r][(c + 1) * sz],
                         .pt = { .y = r, .x = c + 1 },
                 };
-        if (r + 1 < fruity_cols(pfs))   // DOWN
+        if (r + 1 < fruity_rows(pfs))   // DOWN
                 adj[count++] = (struct f2d_cell){
                         .data = &p[r + 1][c * sz],
                         .pt = { .y = r + 1, .x = c },

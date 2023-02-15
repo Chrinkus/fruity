@@ -359,6 +359,33 @@ fruity_adjacent_4_test(void** state)
 }
 
 static void
+adjacent_4_rect_test(void** state)
+        // [0] [1] [2] [3] [4]
+        // [5] [6] [7] [8] [9]
+{
+        (void)state;
+        struct fruity_2d f1 = { 0 };
+        fruity_new(&f1, 2, 5, sizeof(int));
+        int v1 = 0;
+        fruity_transform(&f1, NULL, NULL, int_inc, &v1);
+
+        struct f2d_cell adj[4];
+        int n = 0;
+
+        n = fruity_adjacent_4(&f1, 0, 0, adj);
+        assert_int_equal(n, 2);
+
+        n = fruity_adjacent_4(&f1, 0, 4, adj);
+        assert_int_equal(n, 2);
+
+        n = fruity_adjacent_4(&f1, 0, 2, adj);
+        assert_int_equal(n, 3);
+
+        fruity_free(&f1);
+}
+
+
+static void
 move_test(void** state)
 {
         (void)state;
@@ -453,6 +480,7 @@ int main(void)
                 cmocka_unit_test(fruity_init_test),
                 cmocka_unit_test(fruity_count_if_test),
                 cmocka_unit_test(fruity_adjacent_4_test),
+                cmocka_unit_test(adjacent_4_rect_test),
                 cmocka_unit_test(move_test),
                 cmocka_unit_test(grow_test),
         };
