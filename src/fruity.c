@@ -107,6 +107,19 @@ fruity_move(struct fruity_2d* src, struct fruity_2d* dst)
 }
 
 void*
+fruity_swap(struct fruity_2d* a, struct fruity_2d* b)
+{
+        if (a->rows != b->rows || a->cols != b->cols || a->size != b->size)
+                return NULL;
+
+        char** tmp = a->data;
+        a->data = b->data;
+        b->data = tmp;
+
+        return a;
+}
+
+void*
 fruity_grow(struct fruity_2d* pfs, int nrows, int ncols,
                 unsigned srows, unsigned scols, void* init)
 {

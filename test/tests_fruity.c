@@ -519,6 +519,38 @@ grow_test(void** state)
         fruity_free(&f1);
 }
 
+static void
+swap_test(void** state)
+{
+        (void)state;
+        struct fruity_2d f1 = { 0 };
+        fruity_new(&f1, 9, 4, sizeof(int));
+
+        int v1 = 1;
+        fruity_transform(&f1, NULL, NULL, int_inc, &v1);
+
+        struct fruity_2d f2 = { 0 };
+        v1 = -13;
+        fruity_build(&f2, 9, 4, &v1, sizeof(v1));
+
+        assert_non_null(fruity_swap(&f1, &f2));
+
+        const int* p1 = fruity_get(&f1, 0, 0);
+        assert_int_equal(*p1, -13);
+
+        struct fruity_2d f3 = { 0 };
+        v1 = 3000;
+        fruity_build(&f3, 4, 9, &v1, sizeof(v1));
+
+        assert_null(fruity_swap(&f1, &f3));
+        p1 = fruity_get(&f1, 2, 3);
+        assert_int_equal(*p1, -13);
+
+        fruity_free(&f1);
+        fruity_free(&f2);
+        fruity_free(&f3);
+}
+
 int main(void)
 {
         const struct CMUnitTest tests[] = {
@@ -534,6 +566,7 @@ int main(void)
                 cmocka_unit_test(adjacent_8_test),
                 cmocka_unit_test(move_test),
                 cmocka_unit_test(grow_test),
+                cmocka_unit_test(swap_test),
         };
 
         return cmocka_run_group_tests(tests, NULL, NULL);

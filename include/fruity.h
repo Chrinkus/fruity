@@ -204,6 +204,20 @@ void
 fruity_move(struct fruity_2d* src, struct fruity_2d* dst);
 
 /**
+ * fruity_swap
+ *
+ * Swaps the data members of two fruity structs. Does nothing if the structs
+ * differ in rows, columns or element size and returns NULL.
+ *
+ * @param a     The first fruity struct.
+ * @param b     The second fruity struct.
+ *
+ * @return      A pointer to a on success, NULL on failure.
+ */
+void*
+fruity_swap(struct fruity_2d* a, struct fruity_2d* b);
+
+/**
  * fruity_grow
  *
  * Extend the size of the 2D array by a given number of rows and/or columns.
@@ -434,7 +448,8 @@ fruity_count_if(const struct fruity_2d* pfs,
  * @param pfs   A pointer to the fruity_2d struct.
  * @param r     The row of the source coordinate.
  * @param c     The column of the source coordinate.
- * @param adj   An array of fruity 2D element structs.
+ * @param adj   An array of fruity 2D cell structs with enough room for
+ *              4 elements.
  *
  * @return      The number of adjacent elements found.
  */
@@ -442,6 +457,25 @@ int
 fruity_adjacent_4(const struct fruity_2d* pfs, int r, int c,
                 struct f2d_cell adj[4]);
 
+/**
+ * fruity_adjacent_8
+ *
+ * Get pointers to the 8 adjacent elements of the provided row and column
+ * coordinates. If the coordinates are on the edge there will be less than
+ * 8 values in the out array.
+ *
+ * The caller may need to cast their out array to void** to silence warnings.
+ *
+ * Returns the number of adjacents in the array.
+ *
+ * @param pfs   A pointer to the fruity_2d struct.
+ * @param r     The row of the source coordinate.
+ * @param c     The column of the source coordinate.
+ * @param adj   An array of fruity 2D cell structs with enough room for
+ *              8 elements.
+ *
+ * @return      The number of adjacent elements found.
+ */
 int
 fruity_adjacent_8(const struct fruity_2d* pfs, int r, int c,
                 struct f2d_cell* adj);
